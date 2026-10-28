@@ -2,6 +2,7 @@ class MovementInput:
     moveStrafe = 0.0
     moveForward = 0.0
     jump = False
+    sneak = False
 
     def updatePlayerMoveState(self):
         pass

@@ -14,6 +14,7 @@ class MovementInputFromOptions(MovementInput):
         if symbol == self.__gameSettings.keyBindLeft.keyCode: id_ = 2
         if symbol == self.__gameSettings.keyBindRight.keyCode: id_ = 3
         if symbol == self.__gameSettings.keyBindJump.keyCode: id_ = 4
+        if symbol == self.__gameSettings.keyBindSneak.keyCode: id_ = 5
         if id_ >= 0:
             self.__keys[id_] = state
 
@@ -30,3 +31,4 @@ class MovementInputFromOptions(MovementInput):
         if self.__keys[3]: self.moveStrafe -= 1.0
 
         self.jump = self.__keys[4]
+        self.sneak = self.__keys[5]

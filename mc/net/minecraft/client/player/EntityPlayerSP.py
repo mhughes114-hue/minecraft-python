@@ -18,11 +18,27 @@ class EntityPlayerSP(EntityPlayer):
     def _updatePlayerActionState(self):
         self._moveStrafing = self.movementInput.moveStrafe
         self._moveForward = self.movementInput.moveForward
-        self._isJumping = self.movementInput.jump
+        flying = self.__mc.playerController.isInTestMode
+        if flying and not self.onGround:
+            self._moveStrafing *= 5.0
+            self._moveForward *= 5.0
+
+        self._isJumping = self.movementInput.jump and not flying
 
     def onLivingUpdate(self):
         self.movementInput.updatePlayerMoveState()
+        flying = self.__mc.playerController.isInTestMode
+        if flying:
+            if self.movementInput.jump:
+                self.motionY = 0.42
+            elif self.movementInput.sneak:
+                self.motionY = -0.42
+            else:
+                self.motionY = 0.0
+
         super().onLivingUpdate()
+        if flying:
+            self.motionY = 0.0
 
     def _writeEntityToNBT(self, compound):
         super()._writeEntityToNBT(compound)
