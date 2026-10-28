@@ -499,11 +499,16 @@ class Minecraft(window.Window):
             self.entityRenderer.updateRenderer()
         elif editMode == 1 and item:
             size = item.stackSize
+            damage = item.itemDamage
             stack = item.getItem().onItemRightClick(item, self.theWorld, self.thePlayer)
-            if stack != item or stack and stack.stackSize != size:
+            if self.playerController.isInTestMode:
+                item.stackSize = size
+                item.itemDamage = damage
+                stack = item
+            elif stack != item or stack and stack.stackSize != size:
                 self.thePlayer.inventory.mainInventory[self.thePlayer.inventory.currentItem] = stack
                 self.entityRenderer.itemRenderer.resetEquippedProgress()
-                if stack.stackSize == 0:
+                if stack and stack.stackSize == 0:
                     self.thePlayer.inventory.mainInventory[self.thePlayer.inventory.currentItem] = None
 
         if not self.objectMouseOver:
@@ -549,14 +554,18 @@ class Minecraft(window.Window):
                 return
 
             prevSize = item.stackSize
+            prevDamage = item.itemDamage
             if item.getItem().onItemUse(item, self.theWorld, x, y, z, sideHit):
                 self.entityRenderer.itemRenderer.swingItem()
 
-            if item.stackSize == 0:
+            if self.playerController.isInTestMode:
+                item.stackSize = prevSize
+                item.itemDamage = prevDamage
+            elif item.stackSize == 0:
                 self.thePlayer.inventory.mainInventory[self.thePlayer.inventory.currentItem] = None
                 return
 
-            if item.stackSize != prevSize:
+            if not self.playerController.isInTestMode and item.stackSize != prevSize:
                 self.entityRenderer.itemRenderer.resetEquippedProgress()
 
     def toggleFullscreen(self):

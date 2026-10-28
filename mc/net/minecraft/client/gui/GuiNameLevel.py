@@ -25,7 +25,8 @@ class GuiNameLevel(GuiScreen):
     def _actionPerformed(self, button):
         if button.enabled:
             if button.id == 0 and len(self.__name.strip()) > 1:
-                self.__name.strip()
+                self.__name = self.__name.strip()
+                self.__parent._saveLevel(self.__name, self.__id)
                 self.mc.displayGuiScreen(None)
                 self.mc.setIngameFocus()
             elif button.id == 1:

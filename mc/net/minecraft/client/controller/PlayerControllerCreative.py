@@ -6,12 +6,18 @@ from mc.net.minecraft.game.item.ItemStack import ItemStack
 
 class PlayerControllerCreative(PlayerController):
 
+    def __init__(self, mc):
+        super().__init__(mc)
+        self.isInTestMode = True
+
     def onRespawn(self, player):
-        for i in range(9):
-            if player.inventory.mainInventory[i] is None:
-                player.inventory.mainInventory[i] = ItemStack(blocks.blocksList[Session.registeredBlocksList[i].blockID])
-            else:
-                player.inventory.mainInventory[i].stackSize = 1
+        for i, block in enumerate(Session.registeredBlocksList):
+            if i >= len(player.inventory.mainInventory):
+                break
+
+            player.inventory.mainInventory[i] = ItemStack(
+                blocks.blocksList[block.blockID], 64
+            )
 
     def shouldDrawHUD(self):
         return False

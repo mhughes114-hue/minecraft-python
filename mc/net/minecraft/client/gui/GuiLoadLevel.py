@@ -3,6 +3,7 @@ from mc.net.minecraft.client.gui.GuiScreen import GuiScreen
 from mc.net.minecraft.client.gui.GuiButton import GuiButton
 from mc.net.minecraft.client.PlayerLoader import PlayerLoader
 
+import os
 import traceback
 
 class GuiLoadLevel(GuiScreen):
@@ -19,7 +20,7 @@ class GuiLoadLevel(GuiScreen):
 
     def updateScreen(self):
         if self.__selectedFile:
-            if self.__selectedFile[-8:] != '.mclevel':
+            if not self.__selectedFile.lower().endswith('.mclevel'):
                 self.__selectedFile += '.mclevel'
 
             self._openFile(self.__selectedFile)
@@ -34,6 +35,13 @@ class GuiLoadLevel(GuiScreen):
 
         self._controlList[5].visible = True
 
+    def _getLevelFile(self, slot):
+        return os.path.join(self.mc.mcDataDir, 'saves', f'level{slot}.mclevel')
+
+    def _getLevels(self):
+        return [f'World {i + 1}' if os.path.isfile(self._getLevelFile(i)) else '-'
+                for i in range(5)]
+
     def initGui(self):
         for i in range(5):
             self._controlList.append(GuiButton(i, self.width // 2 - 100,
@@ -46,7 +54,7 @@ class GuiLoadLevel(GuiScreen):
                                            self.height // 6 + 168, 'Cancel'))
         self._controlList[5].visible = False
 
-        self._setLevels(['-', '-', '-', '-', '-'])
+        self._setLevels(self._getLevels())
         self.__loaded = True
 
     def _actionPerformed(self, button):
@@ -62,8 +70,8 @@ class GuiLoadLevel(GuiScreen):
             self.mc.displayGuiScreen(self.__parent)
 
     def _openLevel(self, id_):
+        self._openFile(self._getLevelFile(id_))
         self.mc.displayGuiScreen(None)
-        self.mc.setIngameFocus()
 
     def drawScreen(self, xm, ym, renderPartialTicks):
         self.drawDefaultBackground()
@@ -74,11 +82,8 @@ class GuiLoadLevel(GuiScreen):
         super().drawScreen(xm, ym, renderPartialTicks)
 
     def _openFile(self, file):
-        try:
-            world = PlayerLoader(self.mc, self.mc.loadingScreen).load(file)
-            self.mc.setLevel(world)
-        except Exception as e:
-            print(traceback.format_exc())
+        world = PlayerLoader(self.mc, self.mc.loadingScreen).load(file)
+        self.mc.setLevel(world)
 
     def setFile(self, file):
         self.__selectedFile = file
