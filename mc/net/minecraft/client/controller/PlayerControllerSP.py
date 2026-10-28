@@ -88,6 +88,7 @@ class PlayerControllerSP(PlayerController):
 
     def onWorldChange(self, world):
         super().onWorldChange(world)
+        world.survivalWorld = True
         self.__mobSpawner = MobSpawner(world)
 
     def onUpdate(self):

@@ -45,6 +45,7 @@ from mc.net.minecraft.client.gui.GuiErrorScreen import GuiErrorScreen
 from mc.net.minecraft.client.gui.GuiIngameMenu import GuiIngameMenu
 from mc.net.minecraft.client.gui.GuiGameOver import GuiGameOver
 from mc.net.minecraft.client.gui.GuiIngame import GuiIngame
+from mc.net.minecraft.client.gui.GuiChat import GuiChat
 from mc.net.minecraft.client.gui.container.GuiInventory import GuiInventory
 from mc.net.minecraft.client.effect.EffectRenderer import EffectRenderer
 from mc.net.minecraft.client.render.texture.TextureFlamesFX import TextureFlamesFX
@@ -250,6 +251,8 @@ class Minecraft(window.Window):
 
                 if symbol == window.key.ESCAPE:
                     self.displayInGameMenu()
+                elif symbol == window.key.SLASH:
+                    self.displayGuiScreen(GuiChat())
                 elif symbol == window.key.F7:
                     self.entityRenderer.grabLargeScreenshot()
                 elif symbol == window.key.F5:
@@ -488,6 +491,41 @@ class Minecraft(window.Window):
     def displayInGameMenu(self):
         if not self.currentScreen:
             self.displayGuiScreen(GuiIngameMenu())
+
+    def setGameMode(self, creative):
+        controllerClass = PlayerControllerCreative if creative else PlayerControllerSP
+        if isinstance(self.playerController, controllerClass):
+            return
+
+        self.playerController = controllerClass(self)
+        if self.theWorld:
+            self.playerController.onWorldChange(self.theWorld)
+            if self.thePlayer:
+                self.playerController.onRespawn(self.thePlayer)
+
+    def executeCommand(self, command):
+        parts = command.strip().lstrip('/').split()
+        if not parts:
+            return ''
+
+        name, *arguments = parts
+        name = name.lower()
+        if name == 'help':
+            return 'Commands: /gamemode <c|s>'
+        if name != 'gamemode':
+            return 'Unknown command: /' + name
+        if len(arguments) != 1:
+            return 'Usage: /gamemode <c|s>'
+
+        mode = arguments[0].lower()
+        if mode in ('c', 'creative', '1'):
+            self.setGameMode(True)
+            return 'Set game mode to Creative'
+        if mode in ('s', 'survival', '0'):
+            self.setGameMode(False)
+            return 'Set game mode to Survival'
+
+        return 'Unknown game mode: ' + mode
 
     def __clickMouse(self, editMode):
         if editMode == 0 and self.__leftClickCounter > 0:

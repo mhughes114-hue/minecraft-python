@@ -137,12 +137,20 @@ class GuiIngame(Gui):
             if i >= 10:
                 break
 
-            if message.updateCounter < 200:
+            if message['updateCounter'] < 200:
                 self.__mc.fontRenderer.drawStringWithShadow(
-                    None, 2, scaledHeight - 8 - i * 9 - 20, 0xFFFFFF
+                    message['text'], 2, scaledHeight - 8 - i * 9 - 20,
+                    0xFFFFFF
                 )
 
-    def addChatMessage(self):
+    def addChatMessage(self, message=None):
         self.__updateCounter += 1
-        for message in self.__chatMessageList.copy():
-            message.updateCounter += 1
+        if message:
+            self.__chatMessageList.insert(
+                0, {'text': message, 'updateCounter': 0}
+            )
+
+        for chatMessage in self.__chatMessageList.copy():
+            chatMessage['updateCounter'] += 1
+            if chatMessage['updateCounter'] >= 200:
+                self.__chatMessageList.remove(chatMessage)
