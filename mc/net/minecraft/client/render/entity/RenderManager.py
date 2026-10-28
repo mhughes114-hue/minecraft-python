@@ -13,18 +13,26 @@ from mc.net.minecraft.client.render.entity.RenderGiantZombie import RenderGiantZ
 from mc.net.minecraft.client.model.ModelSheepFur import ModelSheepFur
 from mc.net.minecraft.client.model.ModelSheep import ModelSheep
 from mc.net.minecraft.client.model.ModelPig import ModelPig
+from mc.net.minecraft.client.model.ModelAegis import ModelAegis
+from mc.net.minecraft.client.model.ModelChupacabra import ModelChupacabra
+from mc.net.minecraft.client.model.ModelCinder import ModelCinder
 from mc.net.minecraft.client.model.ModelSkeleton import ModelSkeleton
+from mc.net.minecraft.client.model.ModelVentoraptor import ModelVentoraptor
 from mc.net.minecraft.client.model.ModelZombie import ModelZombie
 from mc.net.minecraft.client.model.ModelBiped import ModelBiped
 from mc.net.minecraft.game.entity.Entity import Entity
 from mc.net.minecraft.game.entity.EntityLiving import EntityLiving
 from mc.net.minecraft.game.entity.EntityPainting import EntityPainting
+from mc.net.minecraft.game.entity.animal.EntityAegis import EntityAegis
 from mc.net.minecraft.game.entity.animal.EntityPig import EntityPig
 from mc.net.minecraft.game.entity.animal.EntitySheep import EntitySheep
+from mc.net.minecraft.game.entity.monster.EntityChupacabra import EntityChupacabra
+from mc.net.minecraft.game.entity.monster.EntityCinder import EntityCinder
 from mc.net.minecraft.game.entity.monster.EntityCreeper import EntityCreeper
 from mc.net.minecraft.game.entity.monster.EntityGiantZombie import EntityGiantZombie
 from mc.net.minecraft.game.entity.monster.EntitySkeleton import EntitySkeleton
 from mc.net.minecraft.game.entity.monster.EntitySpider import EntitySpider
+from mc.net.minecraft.game.entity.monster.EntityVentoraptor import EntityVentoraptor
 from mc.net.minecraft.game.entity.monster.EntityZombie import EntityZombie
 from mc.net.minecraft.game.entity.player.EntityPlayer import EntityPlayer
 from mc.net.minecraft.game.entity.misc.EntityItem import EntityItem
@@ -45,6 +53,10 @@ class RenderManager:
         self.__viewerPosZ = 0.0
         self.__entityRenderMap = {}
         self.__entityRenderMap[EntitySpider] = RenderSpider()
+        self.__entityRenderMap[EntityAegis] = RenderLiving(ModelAegis(), 0.5)
+        self.__entityRenderMap[EntityCinder] = RenderLiving(ModelCinder(), 0.5)
+        self.__entityRenderMap[EntityChupacabra] = RenderLiving(ModelChupacabra(), 0.5)
+        self.__entityRenderMap[EntityVentoraptor] = RenderLiving(ModelVentoraptor(), 0.5)
         self.__entityRenderMap[EntityPig] = RenderLiving(ModelPig(), 0.7)
         self.__entityRenderMap[EntitySheep] = RenderSheep(ModelSheep(), ModelSheepFur(), 0.7)
         self.__entityRenderMap[EntityCreeper] = RenderCreeper()

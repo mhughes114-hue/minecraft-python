@@ -8,6 +8,7 @@ The project has completed the Indev versions of Minecraft.
 This version of Indev, the final one, is **Indev 20100223** as released on _**February 23, 2010**_.
 
 This version adds paintings to the game and makes wood logs drop as logs instead of planks.
+It also includes four original creatures inspired by Lycanites Mobs: the peaceful Aegis and the hostile Cinder, Chupacabra, and Ventoraptor.
 
 Features added in Indev include the wood spawn house, NBT level file saving, mobs and animals, farming, furnaces,
 durable tools, armor, day and night cycle, difficulty, torches, advanced liquid spread,

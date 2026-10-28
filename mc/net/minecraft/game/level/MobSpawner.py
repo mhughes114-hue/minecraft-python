@@ -1,10 +1,14 @@
 from mc.net.minecraft.game.entity.EntityLiving import EntityLiving
+from mc.net.minecraft.game.entity.animal.EntityAegis import EntityAegis
 from mc.net.minecraft.game.entity.animal.EntityAnimal import EntityAnimal
 from mc.net.minecraft.game.entity.animal.EntityPig import EntityPig
 from mc.net.minecraft.game.entity.animal.EntitySheep import EntitySheep
+from mc.net.minecraft.game.entity.monster.EntityChupacabra import EntityChupacabra
+from mc.net.minecraft.game.entity.monster.EntityCinder import EntityCinder
 from mc.net.minecraft.game.entity.monster.EntityCreeper import EntityCreeper
 from mc.net.minecraft.game.entity.monster.EntitySkeleton import EntitySkeleton
 from mc.net.minecraft.game.entity.monster.EntitySpider import EntitySpider
+from mc.net.minecraft.game.entity.monster.EntityVentoraptor import EntityVentoraptor
 from mc.net.minecraft.game.entity.monster.EntityZombie import EntityZombie
 from mc.net.minecraft.game.entity.monster.EntityMob import EntityMob
 from mc.JavaUtils import random
@@ -34,7 +38,7 @@ class MobSpawner:
                 break
 
             mobs = 0
-            choice = self.__worldObj.rand.nextInt(5)
+            choice = self.__worldObj.rand.nextInt(9)
             blockX = self.__worldObj.rand.nextInt(self.__worldObj.width)
             blockY = int(min(self.__worldObj.rand.nextFloat(),
                              self.__worldObj.rand.nextFloat()) * self.__worldObj.height)
@@ -74,6 +78,12 @@ class MobSpawner:
                             mob = EntitySpider(self.__worldObj)
                         elif choice == 3:
                             mob = EntityZombie(self.__worldObj)
+                        elif choice == 4:
+                            mob = EntityCinder(self.__worldObj)
+                        elif choice == 5:
+                            mob = EntityChupacabra(self.__worldObj)
+                        elif choice == 6:
+                            mob = EntityVentoraptor(self.__worldObj)
 
                         if isinstance(mob, EntityMob) and self.__worldObj.difficultySetting == 0:
                             mob = None
@@ -96,7 +106,7 @@ class MobSpawner:
                 break
 
             animals = 0
-            choice = self.__worldObj.rand.nextInt(2)
+            choice = self.__worldObj.rand.nextInt(3)
             blockX = self.__worldObj.rand.nextInt(self.__worldObj.width)
             blockY = self.__worldObj.rand.nextInt(self.__worldObj.height)
             blockZ = self.__worldObj.rand.nextInt(self.__worldObj.length)
@@ -131,6 +141,8 @@ class MobSpawner:
                             animal = EntityPig(self.__worldObj)
                         elif choice == 1:
                             animal = EntitySheep(self.__worldObj)
+                        elif choice == 2:
+                            animal = EntityAegis(self.__worldObj)
 
                         if not animal or self.__worldObj.isBlockNormalCube(xx, yy, zz) or \
                            not self.__worldObj.isBlockNormalCube(xx, yy - 1, zz) or \
