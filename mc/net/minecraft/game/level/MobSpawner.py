@@ -6,12 +6,34 @@ from mc.net.minecraft.game.entity.animal.EntitySheep import EntitySheep
 from mc.net.minecraft.game.entity.monster.EntityChupacabra import EntityChupacabra
 from mc.net.minecraft.game.entity.monster.EntityCinder import EntityCinder
 from mc.net.minecraft.game.entity.monster.EntityCreeper import EntityCreeper
+from mc.net.minecraft.game.entity.monster.EntityGiantZombie import EntityGiantZombie
 from mc.net.minecraft.game.entity.monster.EntitySkeleton import EntitySkeleton
 from mc.net.minecraft.game.entity.monster.EntitySpider import EntitySpider
 from mc.net.minecraft.game.entity.monster.EntityVentoraptor import EntityVentoraptor
 from mc.net.minecraft.game.entity.monster.EntityZombie import EntityZombie
 from mc.net.minecraft.game.entity.monster.EntityMob import EntityMob
 from mc.JavaUtils import random
+
+SPAWN_EGG_ENTITIES = (
+    ('Pig', EntityPig),
+    ('Sheep', EntitySheep),
+    ('Aegis', EntityAegis),
+    ('Zombie', EntityZombie),
+    ('Skeleton', EntitySkeleton),
+    ('Creeper', EntityCreeper),
+    ('Spider', EntitySpider),
+    ('Cinder', EntityCinder),
+    ('Chupacabra', EntityChupacabra),
+    ('Ventoraptor', EntityVentoraptor),
+)
+
+ENTITY_TYPES = {
+    name.lower(): entityClass
+    for name, entityClass in SPAWN_EGG_ENTITIES
+}
+ENTITY_TYPES['giant'] = EntityGiantZombie
+ENTITY_TYPES['giantzombie'] = EntityGiantZombie
+
 
 class MobSpawner:
 

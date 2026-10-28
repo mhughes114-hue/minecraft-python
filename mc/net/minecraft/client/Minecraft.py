@@ -33,6 +33,7 @@ from mc.net.minecraft.client.LoadingScreenRenderer import LoadingScreenRenderer
 from mc.net.minecraft.game.level.World import World
 from mc.net.minecraft.game.level.block.Blocks import blocks
 from mc.net.minecraft.game.item.Items import items
+from mc.net.minecraft.game.item.ItemStack import ItemStack
 from mc.net.minecraft.game.level.generator.LevelGenerator import LevelGenerator
 from mc.net.minecraft.game.entity.EntityLiving import EntityLiving
 from mc.net.minecraft.client.model.ModelBiped import ModelBiped
@@ -46,6 +47,7 @@ from mc.net.minecraft.client.gui.GuiIngameMenu import GuiIngameMenu
 from mc.net.minecraft.client.gui.GuiGameOver import GuiGameOver
 from mc.net.minecraft.client.gui.GuiIngame import GuiIngame
 from mc.net.minecraft.client.gui.GuiChat import GuiChat
+from mc.net.minecraft.client.gui.container.GuiCreativeInventory import GuiCreativeInventory
 from mc.net.minecraft.client.gui.container.GuiInventory import GuiInventory
 from mc.net.minecraft.client.effect.EffectRenderer import EffectRenderer
 from mc.net.minecraft.client.render.texture.TextureFlamesFX import TextureFlamesFX
@@ -59,6 +61,7 @@ from mc.net.minecraft.client.render.RenderEngine import RenderEngine
 from mc.net.minecraft.client.render.WorldRenderer import WorldRenderer
 from mc.net.minecraft.client.controller.PlayerControllerCreative import PlayerControllerCreative
 from mc.net.minecraft.client.controller.PlayerControllerSP import PlayerControllerSP
+from mc.net.minecraft.game.level.MobSpawner import ENTITY_TYPES
 from mc.net.minecraft.client.sound.SoundManager import SoundManager
 from mc.net.minecraft.client.Session import Session
 from mc.JavaUtils import BufferUtils, getMillis
@@ -258,7 +261,10 @@ class Minecraft(window.Window):
                 elif symbol == window.key.F5:
                     self.options.thirdPersonView = not self.options.thirdPersonView
                 elif symbol == self.options.keyBindInventory.keyCode:
-                    self.displayGuiScreen(GuiInventory(self.thePlayer.inventory))
+                    if self.playerController.isInTestMode:
+                        self.displayGuiScreen(GuiCreativeInventory())
+                    else:
+                        self.displayGuiScreen(GuiInventory(self.thePlayer.inventory))
                 elif symbol == self.options.keyBindDrop.keyCode:
                     self.thePlayer.dropPlayerItemWithRandomChoice(
                         self.thePlayer.inventory.decrStackSize(
@@ -511,21 +517,251 @@ class Minecraft(window.Window):
         name, *arguments = parts
         name = name.lower()
         if name == 'help':
-            return 'Commands: /gamemode <c|s>'
-        if name != 'gamemode':
-            return 'Unknown command: /' + name
-        if len(arguments) != 1:
-            return 'Usage: /gamemode <c|s>'
+            return 'Commands: /gamemode <c|s>, /give <item> [amount], ' + \
+                   '/spawn <entity> [count], /tp <x> <y> <z>, ' + \
+                   '/spawnpoint, /time set <day|night|ticks>, /heal, /clear'
+        if name == 'gamemode':
+            if len(arguments) != 1:
+                return 'Usage: /gamemode <c|s>'
 
-        mode = arguments[0].lower()
-        if mode in ('c', 'creative', '1'):
-            self.setGameMode(True)
-            return 'Set game mode to Creative'
-        if mode in ('s', 'survival', '0'):
-            self.setGameMode(False)
-            return 'Set game mode to Survival'
+            mode = arguments[0].lower()
+            if mode in ('c', 'creative', '1'):
+                self.setGameMode(True)
+                return 'Set game mode to Creative'
+            if mode in ('s', 'survival', '0'):
+                self.setGameMode(False)
+                return 'Set game mode to Survival'
 
-        return 'Unknown game mode: ' + mode
+            return 'Unknown game mode: ' + mode
+
+        if name in ('give', 'item'):
+            return self.__executeGive(arguments)
+        if name in ('spawn', 'summon'):
+            return self.__executeSpawn(arguments)
+        if name in ('tp', 'teleport'):
+            return self.__executeTeleport(arguments)
+        if name == 'spawnpoint':
+            return self.__executeSpawnpoint(arguments)
+        if name == 'time':
+            return self.__executeTime(arguments)
+        if name == 'heal':
+            if arguments:
+                return 'Usage: /heal'
+            if not self.thePlayer:
+                return 'You must be in a world to use this command.'
+            self.thePlayer.heal(20)
+            return 'Health restored'
+        if name == 'clear':
+            if arguments:
+                return 'Usage: /clear'
+            if not self.thePlayer:
+                return 'You must be in a world to use this command.'
+            self.thePlayer.inventory.mainInventory = [None] * 36
+            self.thePlayer.inventory.armorInventory = [None] * 4
+            return 'Inventory cleared'
+
+        return 'Unknown command: /' + name
+
+    @staticmethod
+    def __normalizeCommandName(name):
+        name = name.lower().replace('minecraft:', '')
+        return ''.join(character for character in name if character.isalnum())
+
+    def __resolveItemId(self, name):
+        normalized = self.__normalizeCommandName(name)
+        try:
+            itemId = int(name)
+        except ValueError:
+            itemId = None
+
+        if itemId is not None:
+            if 0 < itemId < 256 and blocks.blocksList[itemId]:
+                return itemId
+            if 256 <= itemId < len(items.itemsList) and items.itemsList[itemId]:
+                return itemId
+            return None
+
+        for fieldName, block in vars(blocks).items():
+            if hasattr(block, 'blockID') and \
+               self.__normalizeCommandName(fieldName) == normalized:
+                return block.blockID
+        for fieldName, item in vars(items).items():
+            if hasattr(item, 'shiftedIndex') and \
+               self.__normalizeCommandName(fieldName) == normalized:
+                return item.shiftedIndex
+
+        aliases = {
+            'iron': items.ingotIron.shiftedIndex,
+            'ironingot': items.ingotIron.shiftedIndex,
+            'goldingot': items.ingotGold.shiftedIndex,
+            'spawnegg': items.spawnEgg.shiftedIndex,
+            'diamondsword': items.swordDiamond.shiftedIndex,
+            'ironsword': items.swordSteel.shiftedIndex,
+            'woodensword': items.swordWood.shiftedIndex,
+            'stonesword': items.swordStone.shiftedIndex,
+        }
+        return aliases.get(normalized)
+
+    def __executeGive(self, arguments):
+        if not self.thePlayer:
+            return 'You must be in a world to use this command.'
+        if arguments and arguments[0].lower() in ('@s', '@p', '@a'):
+            arguments = arguments[1:]
+        elif arguments and self.session and \
+             arguments[0].lower() == self.session.username.lower():
+            arguments = arguments[1:]
+        if len(arguments) not in (1, 2):
+            return 'Usage: /give <item> [amount]'
+
+        itemId = self.__resolveItemId(arguments[0])
+        if itemId is None:
+            return 'Unknown item: ' + arguments[0]
+        try:
+            amount = int(arguments[1]) if len(arguments) == 2 else 1
+        except ValueError:
+            return 'Amount must be a whole number.'
+        if amount < 1 or amount > 2304:
+            return 'Amount must be between 1 and 2304.'
+
+        item = items.itemsList[itemId]
+        stackLimit = item.getItemStackLimit()
+        remaining = amount
+        added = 0
+        while remaining:
+            size = min(remaining, stackLimit)
+            stack = ItemStack(itemId, size)
+            if not self.thePlayer.inventory.addItemStackToInventory(stack):
+                added += size - stack.stackSize
+                break
+            added += size
+            remaining -= size
+
+        if added == 0:
+            return 'Inventory is full.'
+        if added < amount:
+            return 'Added ' + str(added) + '; inventory is full.'
+        return 'Gave ' + str(amount) + ' ' + self.__getCommandItemName(itemId) + '.'
+
+    def __getCommandItemName(self, itemId):
+        for name, item in vars(items).items():
+            if hasattr(item, 'shiftedIndex') and item.shiftedIndex == itemId:
+                return name
+        block = blocks.blocksList[itemId] if itemId < 256 else None
+        if block:
+            for name, candidate in vars(blocks).items():
+                if candidate is block:
+                    return name
+        return 'item ' + str(itemId)
+
+    def __executeSpawn(self, arguments):
+        if not self.theWorld or not self.thePlayer:
+            return 'You must be in a world to use this command.'
+        if len(arguments) not in (1, 2):
+            return 'Usage: /spawn <entity> [count]'
+        entityName = self.__normalizeCommandName(arguments[0])
+        entityClass = ENTITY_TYPES.get(entityName)
+        if not entityClass:
+            return 'Unknown entity: ' + arguments[0]
+        try:
+            count = int(arguments[1]) if len(arguments) == 2 else 1
+        except ValueError:
+            return 'Count must be a whole number.'
+        if count < 1 or count > 20:
+            return 'Count must be between 1 and 20.'
+
+        player = self.thePlayer
+        world = self.theWorld
+        yaw = player.rotationYaw
+        radians = math.radians(yaw)
+        baseX = player.posX - math.sin(radians) * 2.0
+        baseY = player.posY - player.yOffset
+        baseZ = player.posZ + math.cos(radians) * 2.0
+        for index in range(count):
+            entity = entityClass(world)
+            offset = index * 0.75
+            entity.setPositionAndRotation(
+                baseX - math.cos(radians) * offset, baseY,
+                baseZ - math.sin(radians) * offset, yaw, 0.0
+            )
+            world.spawnEntityInWorld(entity)
+        return 'Spawned ' + str(count) + ' ' + arguments[0] + '.'
+
+    def __executeTeleport(self, arguments):
+        if not self.theWorld or not self.thePlayer:
+            return 'You must be in a world to use this command.'
+        if len(arguments) == 4:
+            target = arguments.pop(0).lower()
+            username = self.session.username.lower() if self.session else ''
+            if target not in ('@s', '@p', username):
+                return 'This single-player world only supports teleporting yourself.'
+        if len(arguments) != 3:
+            return 'Usage: /tp <x> <y> <z>'
+
+        player = self.thePlayer
+        current = (player.posX, player.posY - player.yOffset, player.posZ)
+        positions = []
+        try:
+            for value, previous in zip(arguments, current):
+                coordinate = previous + float(value[1:]) if value.startswith('~') and value[1:] \
+                    else previous if value == '~' else float(value)
+                if not math.isfinite(coordinate):
+                    raise ValueError
+                positions.append(coordinate)
+        except ValueError:
+            return 'Coordinates must be numbers or relative values such as ~5.'
+
+        x, y, z = positions
+        world = self.theWorld
+        if not 0 <= x < world.width or not 0 <= y < world.height - 1 or \
+           not 0 <= z < world.length:
+            return 'Coordinates are outside this world.'
+        player.setPositionAndRotation(x, y, z, player.rotationYaw, player.rotationPitch)
+        player.motionX = player.motionY = player.motionZ = 0.0
+        return 'Teleported to ' + ', '.join(str(round(value, 2)) for value in positions) + '.'
+
+    def __executeSpawnpoint(self, arguments):
+        if not self.theWorld or not self.thePlayer:
+            return 'You must be in a world to use this command.'
+        if arguments:
+            if len(arguments) != 3:
+                return 'Usage: /spawnpoint [x y z]'
+            try:
+                x, y, z = (int(value) for value in arguments)
+            except ValueError:
+                return 'Spawn coordinates must be whole numbers.'
+        else:
+            player = self.thePlayer
+            x = int(player.posX)
+            y = int(player.posY - player.yOffset)
+            z = int(player.posZ)
+        if not 0 <= x < self.theWorld.width or not 0 <= y < self.theWorld.height or \
+           not 0 <= z < self.theWorld.length:
+            return 'Coordinates are outside this world.'
+        self.theWorld.xSpawn = x
+        self.theWorld.ySpawn = y
+        self.theWorld.zSpawn = z
+        self.theWorld.rotSpawn = self.thePlayer.rotationYaw
+        return 'Spawn point set to ' + str(x) + ', ' + str(y) + ', ' + str(z) + '.'
+
+    def __executeTime(self, arguments):
+        if not self.theWorld:
+            return 'You must be in a world to use this command.'
+        if len(arguments) != 2 or arguments[0].lower() != 'set':
+            return 'Usage: /time set <day|night|ticks>'
+        value = arguments[1].lower()
+        if value == 'day':
+            time = 0
+        elif value == 'night':
+            time = 13000
+        else:
+            try:
+                time = int(value)
+            except ValueError:
+                return 'Time must be day, night, or a whole number of ticks.'
+            if time < 0:
+                return 'Time cannot be negative.'
+        self.theWorld.worldTime = time % self.theWorld.TIME_CYCLE
+        return 'Set the time to ' + str(self.theWorld.worldTime) + '.'
 
     def __clickMouse(self, editMode):
         if editMode == 0 and self.__leftClickCounter > 0:

@@ -73,7 +73,9 @@ class InventoryPlayer(Inventory):
                     slot = -1
                     break
 
-                if self.mainInventory[maybeSlot] and self.mainInventory[maybeSlot].itemID == itemId:
+                if self.mainInventory[maybeSlot] and \
+                   self.mainInventory[maybeSlot].itemID == itemId and \
+                   self.mainInventory[maybeSlot].itemDamage == stack.itemDamage:
                     item = self.mainInventory[maybeSlot]
                     if self.mainInventory[maybeSlot].stackSize < item.getItem().getItemStackLimit() and \
                        self.mainInventory[maybeSlot].stackSize < Inventory.STACK_LIMIT:

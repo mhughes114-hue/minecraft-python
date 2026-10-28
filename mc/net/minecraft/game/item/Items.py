@@ -11,6 +11,7 @@ from mc.net.minecraft.game.item.ItemFood import ItemFood
 from mc.net.minecraft.game.item.ItemAxe import ItemAxe
 from mc.net.minecraft.game.item.ItemBow import ItemBow
 from mc.net.minecraft.game.item.ItemHoe import ItemHoe
+from mc.net.minecraft.game.item.ItemSpawnEgg import ItemSpawnEgg
 from mc.net.minecraft.game.item.Item import Item
 from mc.net.minecraft.game.level.block.Blocks import blocks
 
@@ -103,6 +104,7 @@ class Items:
         self.porkCooked = ItemFood(self, 64, 8).setIconIndex(88)
 
         self.painting = ItemPainting(self, 65).setIconIndex(26)
+        self.spawnEgg = ItemSpawnEgg(self, 66)
 
         for i in range(256):
             if blocks.blocksList[i]:

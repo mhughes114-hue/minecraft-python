@@ -46,8 +46,10 @@ The argument `-creative` will force the game to be in creative mode.
 All controls are as you would expect for the game and they can be configured in the options menu.
 Press Left Control (configurable in Controls) to toggle sprint, or double-tap Forward to start sprinting. Sprinting increases ground movement speed.
 Creative flight speed can be adjusted with `creativeFlightMultiplier` in `options.txt` (default `10.0`); this setting only affects creative flight.
-Press I to open your inventory, F5 for third person view and F7 to take a cool isometric screenshot.
-Press `/` to enter a command. Use `/gamemode c` to switch to creative mode or `/gamemode s` to switch back to survival. In creative mode, hold Space to fly up and Left Shift to fly down.
+Press I to open your inventory (or the item catalog in creative mode), F5 for third person view and F7 to take an isometric screenshot.
+The creative catalog has item categories, pages, and spawn eggs; click an item to put a stack in the selected hotbar slot.
+Press `/` to enter a command. Available commands include `/gamemode c|s`, `/give <item> [amount]`, `/spawn <entity> [count]` (also `/summon`), `/tp <x> <y> <z>` (also `/teleport`), `/spawnpoint`, `/time set <day|night|ticks>`, `/heal`, and `/clear`. Teleports accept relative coordinates such as `~5`. This is a local single-player command set, so give and teleport target only the current player.
+In creative mode, hold Space to fly up and Left Shift to fly down. Right-click a spawn egg to create its mob.
 
 The Indev level generator is customizable and you can choose between the *Inland*, *Island*, *Floating*, and *Flat* level types.
 You can specify the world theme as *Normal*, *Hell* (lava and dirt instead of water and grass), *Paradise* (always daylight), or *Woods*.

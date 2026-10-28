@@ -1,6 +1,7 @@
 from mc.net.minecraft.client.render.Tessellator import tessellator
 from mc.net.minecraft.client.render.entity.Render import Render
 from mc.net.minecraft.client.render.RenderBlocks import RenderBlocks
+from mc.net.minecraft.client.gui.Gui import Gui
 from mc.net.minecraft.game.level.block.Blocks import blocks
 from mc.JavaUtils import Random
 from pyglet import gl
@@ -20,7 +21,9 @@ class RenderItem(Render):
         if not stack:
             return
 
-        if stack.itemID < 256 and blocks.blocksList[stack.itemID].getRenderType() == 0:
+        if getattr(stack.getItem(), 'isSpawnEgg', False):
+            self.__renderSpawnEggIcon(stack, width, height)
+        elif stack.itemID < 256 and blocks.blocksList[stack.itemID].getRenderType() == 0:
             renderEngine.bindTexture(renderEngine.getTexture('terrain.png'))
             block = blocks.blocksList[stack.itemID]
             gl.glPushMatrix()
@@ -63,7 +66,7 @@ class RenderItem(Render):
                 height + 6 + 3, 16777215)
             gl.glEnable(gl.GL_LIGHTING)
             gl.glEnable(gl.GL_DEPTH_TEST)
-        if stack.itemDamage > 0:
+        if stack.itemDamage > 0 and not getattr(stack.getItem(), 'isSpawnEgg', False):
             x = 13 - stack.itemDamage * 13 // stack.isItemStackDamageable()
             z1 = 255 - stack.itemDamage * 255 // stack.isItemStackDamageable()
             gl.glDisable(gl.GL_LIGHTING)
@@ -79,6 +82,73 @@ class RenderItem(Render):
             gl.glEnable(gl.GL_DEPTH_TEST)
             gl.glEnable(gl.GL_TEXTURE_2D)
             gl.glColor4f(1.0, 1.0, 1.0, 1.0)
+
+    @staticmethod
+    def __renderSpawnEggIcon(stack, x, y):
+        base, spots = RenderItem.__getSpawnEggColors(stack)
+        gl.glDisable(gl.GL_LIGHTING)
+        Gui._drawRect(x + 6, y + 2, x + 10, y + 4, 0xFF171715)
+        Gui._drawRect(x + 4, y + 4, x + 12, y + 6, 0xFF171715)
+        Gui._drawRect(x + 3, y + 6, x + 13, y + 11, 0xFF171715)
+        Gui._drawRect(x + 4, y + 11, x + 12, y + 14, 0xFF171715)
+        Gui._drawRect(x + 6, y + 14, x + 10, y + 15, 0xFF171715)
+        Gui._drawRect(x + 6, y + 3, x + 10, y + 5, base)
+        Gui._drawRect(x + 5, y + 5, x + 11, y + 7, base)
+        Gui._drawRect(x + 4, y + 7, x + 12, y + 11, base)
+        Gui._drawRect(x + 5, y + 11, x + 11, y + 13, base)
+        Gui._drawRect(x + 7, y + 13, x + 9, y + 14, base)
+        Gui._drawRect(x + 6, y + 6, x + 8, y + 8, spots)
+        Gui._drawRect(x + 9, y + 9, x + 11, y + 10, spots)
+        Gui._drawRect(x + 6, y + 11, x + 8, y + 12, spots)
+        gl.glColor4f(1.0, 1.0, 1.0, 1.0)
+        gl.glEnable(gl.GL_LIGHTING)
+
+    @staticmethod
+    def __getSpawnEggColors(stack):
+        colors = (
+            (0xFFEEE5CE, 0xFF8F5735),
+            (0xFFF4F0E8, 0xFF817C72),
+            (0xFFC9DFE5, 0xFF46728A),
+            (0xFF6D9E38, 0xFF2E4C1D),
+            (0xFFF2F0E8, 0xFF55534F),
+            (0xFF4F4F4F, 0xFF91B53B),
+            (0xFF554A3B, 0xFFB89965),
+            (0xFFFFB348, 0xFF8C382B),
+            (0xFF8E6346, 0xFFD8C19A),
+            (0xFF78916B, 0xFF3B4D32),
+        )
+        return colors[stack.itemDamage % len(colors)]
+
+    @staticmethod
+    def __renderSpawnEggWorld(stack, t):
+        base, spots = RenderItem.__getSpawnEggColors(stack)
+        regions = (
+            (6, 2, 10, 4, 0x171715),
+            (4, 4, 12, 6, 0x171715),
+            (3, 6, 13, 11, 0x171715),
+            (4, 11, 12, 14, 0x171715),
+            (6, 14, 10, 15, 0x171715),
+            (6, 3, 10, 5, base),
+            (5, 5, 11, 7, base),
+            (4, 7, 12, 11, base),
+            (5, 11, 11, 13, base),
+            (7, 13, 9, 14, base),
+            (6, 6, 8, 8, spots),
+            (9, 9, 11, 10, spots),
+            (6, 11, 8, 12, spots),
+        )
+        for left, top, right, bottom, color in regions:
+            x0 = (left - 8.0) / 16.0
+            x1 = (right - 8.0) / 16.0
+            y0 = 0.75 - bottom / 16.0
+            y1 = 0.75 - top / 16.0
+            t.startDrawingQuads()
+            t.setColorOpaque_I(color & 0xFFFFFF)
+            t.addVertex(x0, y0, 0.0)
+            t.addVertex(x1, y0, 0.0)
+            t.addVertex(x1, y1, 0.0)
+            t.addVertex(x0, y1, 0.0)
+            t.draw()
 
     @staticmethod
     def __renderQuad(t, width, height, x, y, z):
@@ -128,34 +198,53 @@ class RenderItem(Render):
                 gl.glPopMatrix()
         else:
             gl.glScalef(0.5, 0.5, 0.5)
-            iconIndex = item.getItem().getIconIndex()
-            if item.itemID < 256:
-                self._loadTexture('terrain.png')
+            if getattr(item.getItem(), 'isSpawnEgg', False):
+                gl.glDisable(gl.GL_TEXTURE_2D)
+                gl.glDisable(gl.GL_LIGHTING)
+                for i in range(renders):
+                    gl.glPushMatrix()
+                    if i > 0:
+                        gl.glTranslatef(
+                            (self.__random.nextFloat() * 2.0 - 1.0) * 0.3,
+                            (self.__random.nextFloat() * 2.0 - 1.0) * 0.3,
+                            (self.__random.nextFloat() * 2.0 - 1.0) * 0.3
+                        )
+                    gl.glRotatef(180.0 - self._renderManager.playerViewY,
+                                 0.0, 1.0, 0.0)
+                    self.__renderSpawnEggWorld(item, tessellator)
+                    gl.glPopMatrix()
+                gl.glEnable(gl.GL_LIGHTING)
+                gl.glEnable(gl.GL_TEXTURE_2D)
+                gl.glColor4f(1.0, 1.0, 1.0, 1.0)
             else:
-                self._loadTexture('gui/items.png')
-            t = tessellator
-            u0 = (iconIndex % 16 << 4) / 256.0
-            u1 = ((iconIndex % 16 << 4) + 16) / 256.0
-            v0 = (iconIndex // 16 << 4) / 256.0
-            v1 = ((iconIndex // 16 << 4) + 16) / 256.0
+                iconIndex = item.getItem().getIconIndex()
+                if item.itemID < 256:
+                    self._loadTexture('terrain.png')
+                else:
+                    self._loadTexture('gui/items.png')
+                t = tessellator
+                u0 = (iconIndex % 16 << 4) / 256.0
+                u1 = ((iconIndex % 16 << 4) + 16) / 256.0
+                v0 = (iconIndex // 16 << 4) / 256.0
+                v1 = ((iconIndex // 16 << 4) + 16) / 256.0
 
-            for i in range(renders):
-                gl.glPushMatrix()
-                if i > 0:
-                    x = (self.__random.nextFloat() * 2.0 - 1.0) * 0.3
-                    y = (self.__random.nextFloat() * 2.0 - 1.0) * 0.3
-                    z = (self.__random.nextFloat() * 2.0 - 1.0) * 0.3
-                    gl.glTranslatef(x, y, z)
+                for i in range(renders):
+                    gl.glPushMatrix()
+                    if i > 0:
+                        x = (self.__random.nextFloat() * 2.0 - 1.0) * 0.3
+                        y = (self.__random.nextFloat() * 2.0 - 1.0) * 0.3
+                        z = (self.__random.nextFloat() * 2.0 - 1.0) * 0.3
+                        gl.glTranslatef(x, y, z)
 
-                gl.glRotatef(180.0 - self._renderManager.playerViewY, 0.0, 1.0, 0.0)
-                t.startDrawingQuads()
-                t.setNormal(0.0, 1.0, 0.0)
-                t.addVertexWithUV(-0.5, -0.25, 0.0, u0, v1)
-                t.addVertexWithUV(0.5, -0.25, 0.0, u1, v1)
-                t.addVertexWithUV(0.5, 12.0 / 16.0, 0.0, u1, v0)
-                t.addVertexWithUV(-0.5, 12.0 / 16.0, 0.0, u0, v0)
-                t.draw()
-                gl.glPopMatrix()
+                    gl.glRotatef(180.0 - self._renderManager.playerViewY, 0.0, 1.0, 0.0)
+                    t.startDrawingQuads()
+                    t.setNormal(0.0, 1.0, 0.0)
+                    t.addVertexWithUV(-0.5, -0.25, 0.0, u0, v1)
+                    t.addVertexWithUV(0.5, -0.25, 0.0, u1, v1)
+                    t.addVertexWithUV(0.5, 12.0 / 16.0, 0.0, u1, v0)
+                    t.addVertexWithUV(-0.5, 12.0 / 16.0, 0.0, u0, v0)
+                    t.draw()
+                    gl.glPopMatrix()
 
         gl.glDisable(gl.GL_NORMALIZE)
         gl.glPopMatrix()

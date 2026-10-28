@@ -1,8 +1,5 @@
-from mc.net.minecraft.client.Session import Session
 from mc.net.minecraft.client.controller.PlayerController import PlayerController
 from mc.net.minecraft.game.level.MobSpawner import MobSpawner
-from mc.net.minecraft.game.level.block.Blocks import blocks
-from mc.net.minecraft.game.item.ItemStack import ItemStack
 
 class PlayerControllerCreative(PlayerController):
 
@@ -11,13 +8,8 @@ class PlayerControllerCreative(PlayerController):
         self.isInTestMode = True
 
     def onRespawn(self, player):
-        for i, block in enumerate(Session.registeredBlocksList):
-            if i >= len(player.inventory.mainInventory):
-                break
-
-            player.inventory.mainInventory[i] = ItemStack(
-                blocks.blocksList[block.blockID], 64
-            )
+        player.inventory.mainInventory = [None] * len(player.inventory.mainInventory)
+        player.inventory.armorInventory = [None] * len(player.inventory.armorInventory)
 
     def shouldDrawHUD(self):
         return False
