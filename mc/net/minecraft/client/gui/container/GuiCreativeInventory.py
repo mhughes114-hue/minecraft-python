@@ -128,7 +128,7 @@ class GuiCreativeInventory(GuiScreen):
             self.category = (self.category + direction) % len(self.CATEGORIES)
             self.page = 0
             self.__refreshEntries()
-        elif window.key._1 <= key <= window.key._9:
+        elif key is not None and window.key._1 <= key <= window.key._9:
             self.mc.thePlayer.inventory.currentItem = key - window.key._1
         else:
             super()._keyTyped(key, char, motion)
