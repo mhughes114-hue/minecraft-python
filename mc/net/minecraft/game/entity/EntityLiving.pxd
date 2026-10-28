@@ -30,8 +30,10 @@ cdef class EntityLiving(Entity):
         float __randomYawVelocity
         public bint _isJumping
         public bint _isSprinting
+        public bint _isCreativeFlying
         float __defaultPitch
         public float _moveSpeed
+        public float _creativeFlightMultiplier
 
     cpdef float _getEyeHeight(self)
     cdef _fall(self, float d)

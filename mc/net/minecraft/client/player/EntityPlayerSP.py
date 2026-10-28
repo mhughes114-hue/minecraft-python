@@ -19,11 +19,11 @@ class EntityPlayerSP(EntityPlayer):
         self._moveStrafing = self.movementInput.moveStrafe
         self._moveForward = self.movementInput.moveForward
         flying = self.__mc.playerController.isInTestMode
+        self._isCreativeFlying = flying and not self.onGround
         self._isSprinting = self.movementInput.sprint and self._moveForward > 0.0 and \
                             not self.movementInput.sneak and not flying
-        if flying and not self.onGround:
-            self._moveStrafing *= 5.0
-            self._moveForward *= 5.0
+        if self._isCreativeFlying:
+            self._creativeFlightMultiplier = self.__mc.options.creativeFlightMultiplier
 
         self._isJumping = self.movementInput.jump and not flying
 

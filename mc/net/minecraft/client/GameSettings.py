@@ -4,6 +4,7 @@ from pyglet import window
 import pathlib
 import sys
 import os
+import math
 
 if 'win' in sys.platform:
     metaKeys = (window.key.LWINDOWS, window.key.RWINDOWS)
@@ -170,6 +171,7 @@ class GameSettings:
                             self.keyBindSave, self.keyBindLoad]
         self.__mc = mc
         self.__optionsFile = (pathlib.Path(file) / 'options.txt').resolve()
+        self.creativeFlightMultiplier = 10.0
         self.__loadOptions()
 
     def setKeyBindingString(self, i):
@@ -251,6 +253,11 @@ class GameSettings:
                             self.limitFramerate = split[1] == 'true'
                         elif split[0] == 'difficulty':
                             self.difficulty = int(split[1])
+                        elif split[0] == 'creativeFlightMultiplier':
+                            multiplier = float(split[1])
+                            if not math.isfinite(multiplier) or multiplier < 0.0:
+                                raise ValueError('creativeFlightMultiplier must be a non-negative number')
+                            self.creativeFlightMultiplier = multiplier
 
                         for binding in self.keyBindings:
                             if split[0] == 'key_' + binding.keyDescription:
@@ -270,6 +277,7 @@ class GameSettings:
                 f.write('anaglyph3d:' + ('true' if self.anaglyph else 'false') + '\n')
                 f.write('limitFramerate:' + ('true' if self.limitFramerate else 'false') + '\n')
                 f.write('difficulty:' + str(self.difficulty) + '\n')
+                f.write('creativeFlightMultiplier:' + str(self.creativeFlightMultiplier) + '\n')
 
                 for binding in self.keyBindings:
                     f.write('key_' + binding.keyDescription + ':' + str(_GL_KEYS[binding.keyCode]) + '\n')

@@ -43,6 +43,8 @@ cdef class EntityLiving(Entity):
         self._entityAge = 0
         self._isJumping = False
         self._isSprinting = False
+        self._isCreativeFlying = False
+        self._creativeFlightMultiplier = 10.0
         self.__defaultPitch = 0.0
         self._moveSpeed = 0.7
 
@@ -285,8 +287,13 @@ cdef class EntityLiving(Entity):
             ):
                 self.motionY = 0.3
         else:
-            self.moveFlying(x, z, 0.13 if self.onGround and self._isSprinting else
-                            0.1 if self.onGround else 0.02)
+            if self.onGround:
+                speed = 0.2 if self._isSprinting else 0.1
+            elif self._isCreativeFlying:
+                speed = 0.02 * self._creativeFlightMultiplier
+            else:
+                speed = 0.02
+            self.moveFlying(x, z, speed)
             self.moveEntity(self.motionX, self.motionY, self.motionZ)
             self.motionX *= 0.91
             self.motionY *= 0.98
