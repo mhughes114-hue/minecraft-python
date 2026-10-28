@@ -17,7 +17,7 @@ class GuiControls(GuiScreen):
                                                     self.__options.setKeyBindingString(i)))
 
         self._controlList.append(GuiButton(200, self.width // 2 - 100,
-                                           self.height // 6 + 168, 'Done'))
+                                           self.height // 6 + 192, 'Done'))
 
     def _actionPerformed(self, button):
         for i, binding in enumerate(self.__options.keyBindings):

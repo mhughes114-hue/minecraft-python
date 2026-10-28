@@ -43,6 +43,7 @@ The argument `-creative` will force the game to be in creative mode.
 ### Gameplay
 
 All controls are as you would expect for the game and they can be configured in the options menu.
+Press Left Control (configurable in Controls) to toggle sprint, or double-tap Forward to start sprinting. Sprinting increases ground movement speed.
 Press I to open your inventory, F5 for third person view and F7 to take a cool isometric screenshot.
 Press `/` to enter a command. Use `/gamemode c` to switch to creative mode or `/gamemode s` to switch back to survival. In creative mode, hold Space to fly up and Left Shift to fly down.
 

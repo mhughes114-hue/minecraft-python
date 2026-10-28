@@ -29,6 +29,7 @@ cdef class EntityLiving(Entity):
         public float _moveForward
         float __randomYawVelocity
         public bint _isJumping
+        public bint _isSprinting
         float __defaultPitch
         public float _moveSpeed
 

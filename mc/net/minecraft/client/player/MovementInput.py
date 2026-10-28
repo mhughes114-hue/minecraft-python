@@ -3,6 +3,7 @@ class MovementInput:
     moveForward = 0.0
     jump = False
     sneak = False
+    sprint = False
 
     def updatePlayerMoveState(self):
         pass

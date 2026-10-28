@@ -5,24 +5,40 @@ class MovementInputFromOptions(MovementInput):
 
     def __init__(self, options):
         self.__gameSettings = options
-        self.__keys = [False] * 10
+        self.__keys = [False] * 7
+        self.__sprintEnabled = False
+        self.__forwardTapTimer = 0
 
     def checkKeyForMovementInput(self, symbol, state):
         id_ = -1
-        if symbol == self.__gameSettings.keyBindForward.keyCode: id_ = 0
+        if symbol == self.__gameSettings.keyBindForward.keyCode:
+            id_ = 0
+            if state and not self.__keys[0]:
+                if self.__forwardTapTimer > 0:
+                    self.__sprintEnabled = True
+                    self.__forwardTapTimer = 0
+                else:
+                    self.__forwardTapTimer = 7
         if symbol == self.__gameSettings.keyBindBack.keyCode: id_ = 1
         if symbol == self.__gameSettings.keyBindLeft.keyCode: id_ = 2
         if symbol == self.__gameSettings.keyBindRight.keyCode: id_ = 3
         if symbol == self.__gameSettings.keyBindJump.keyCode: id_ = 4
         if symbol == self.__gameSettings.keyBindSneak.keyCode: id_ = 5
+        if symbol == self.__gameSettings.keyBindSprint.keyCode:
+            id_ = 6
+            if state and not self.__keys[6]:
+                self.__sprintEnabled = not self.__sprintEnabled
         if id_ >= 0:
             self.__keys[id_] = state
 
     def resetKeyState(self):
-        for i in range(10):
+        for i in range(len(self.__keys)):
             self.__keys[i] = False
 
     def updatePlayerMoveState(self):
+        if self.__forwardTapTimer > 0:
+            self.__forwardTapTimer -= 1
+
         self.moveStrafe = 0.0
         self.moveForward = 0.0
         if self.__keys[0]: self.moveForward += 1.0
@@ -32,3 +48,4 @@ class MovementInputFromOptions(MovementInput):
 
         self.jump = self.__keys[4]
         self.sneak = self.__keys[5]
+        self.sprint = self.__sprintEnabled

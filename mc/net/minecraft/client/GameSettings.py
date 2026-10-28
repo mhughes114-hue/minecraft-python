@@ -155,6 +155,7 @@ class GameSettings:
         self.keyBindRight = KeyBinding('Right', window.key.D)
         self.keyBindJump = KeyBinding('Jump', window.key.SPACE)
         self.keyBindSneak = KeyBinding('Sneak', window.key.LSHIFT)
+        self.keyBindSprint = KeyBinding('Sprint', window.key.LCTRL)
         self.keyBindInventory = KeyBinding('Inventory', window.key.I)
         self.keyBindDrop = KeyBinding('Drop', window.key.Q)
         self.keyBindChat = KeyBinding('Chat', window.key.T)
@@ -163,6 +164,7 @@ class GameSettings:
         self.keyBindLoad = KeyBinding('Load location', window.key.R)
         self.keyBindings = [self.keyBindForward, self.keyBindLeft, self.keyBindBack,
                             self.keyBindRight, self.keyBindJump, self.keyBindSneak,
+                            self.keyBindSprint,
                             self.keyBindDrop,
                             self.keyBindInventory, self.keyBindChat, self.keyBindToggleFog,
                             self.keyBindSave, self.keyBindLoad]
