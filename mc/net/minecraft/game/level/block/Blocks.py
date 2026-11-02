@@ -13,6 +13,7 @@ from mc.net.minecraft.game.level.block.BlockChest import BlockChest
 from mc.net.minecraft.game.level.block.BlockCrops import BlockCrops
 from mc.net.minecraft.game.level.block.BlockFlower import BlockFlower
 from mc.net.minecraft.game.level.block.BlockGravel import BlockGravel
+from mc.net.minecraft.game.level.block.BlockLuckyBlock import BlockLuckyBlock
 from mc.net.minecraft.game.level.block.BlockGlass import BlockGlass
 from mc.net.minecraft.game.level.block.BlockGrass import BlockGrass
 from mc.net.minecraft.game.level.block.BlockGears import BlockGears
@@ -199,5 +200,8 @@ class Blocks:
         self.stoneOvenIdle.stepSound = self.soundStoneFootstep
         self.stoneOvenActive = BlockFurnace(self, 62, True).setHardness(3.5).setLightValue(14.0 / 16.0)
         self.stoneOvenActive.stepSound = self.soundStoneFootstep
+
+        self.luckyBlock = BlockLuckyBlock(self, 63, 89).setHardness(1.5)
+        self.luckyBlock.stepSound = self.soundStoneFootstep
 
 blocks = Blocks()

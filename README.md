@@ -50,6 +50,7 @@ Press I to open your inventory (or the item catalog in creative mode), F5 for th
 The creative catalog has item categories, pages, and spawn eggs; click an item to put a stack in the selected hotbar slot.
 Press `/` to enter a command. Available commands include `/gamemode c|s`, `/give <item> [amount]`, `/spawn <entity> [count]` (also `/summon`), `/tp <x> <y> <z>` (also `/teleport`), `/spawnpoint`, `/time set <day|night|ticks>`, `/heal`, and `/clear`. Teleports accept relative coordinates such as `~5`. This is a local single-player command set, so give and teleport target only the current player.
 In creative mode, hold Space to fly up and Left Shift to fly down. Right-click a spawn egg to create its mob.
+Lucky Blocks are available in the creative catalog; breaking one drops a random reward.
 
 The Indev level generator is customizable and you can choose between the *Inland*, *Island*, *Floating*, and *Flat* level types.
 You can specify the world theme as *Normal*, *Hell* (lava and dirt instead of water and grass), *Paradise* (always daylight), or *Woods*.
@@ -72,3 +73,8 @@ in the `mc.Resources` module.
 This would have been much more challenging to work on without the great tools provided by [RetroMCP-Java](https://github.com/MCPHackers/RetroMCP-Java).
 
 All credit for Minecraft goes towards its creator Notch and Mojang Specifications.
+
+
+
+Yeah ok but what I do is
+.\.venv\Scripts\python.exe -m mc.net.minecraft.client.Minecraft

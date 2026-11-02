@@ -998,6 +998,6 @@ if __name__ == '__main__':
 
     game = Minecraft(fullscreen, creative, width=854, height=480,
                      resizable=True, vsync=False, visible=False,
-                     caption='Minecraft Indev')
+                     caption='PYcraft Indev')
     game.session = Session(name, sessionId)
     game.run()
