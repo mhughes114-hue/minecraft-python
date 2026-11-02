@@ -10,6 +10,7 @@ from mc.net.minecraft.client.render.entity.RenderSheep import RenderSheep
 from mc.net.minecraft.client.render.entity.RenderItem import RenderItem
 from mc.net.minecraft.client.render.entity.RenderTNTPrimed import RenderTNTPrimed
 from mc.net.minecraft.client.render.entity.RenderGiantZombie import RenderGiantZombie
+from mc.net.minecraft.client.render.entity.RenderWitherStorm import RenderWitherStorm
 from mc.net.minecraft.client.model.ModelSheepFur import ModelSheepFur
 from mc.net.minecraft.client.model.ModelSheep import ModelSheep
 from mc.net.minecraft.client.model.ModelPig import ModelPig
@@ -33,6 +34,7 @@ from mc.net.minecraft.game.entity.monster.EntityGiantZombie import EntityGiantZo
 from mc.net.minecraft.game.entity.monster.EntitySkeleton import EntitySkeleton
 from mc.net.minecraft.game.entity.monster.EntitySpider import EntitySpider
 from mc.net.minecraft.game.entity.monster.EntityVentoraptor import EntityVentoraptor
+from mc.net.minecraft.game.entity.monster.EntityWitherStorm import EntityWitherStorm
 from mc.net.minecraft.game.entity.monster.EntityZombie import EntityZombie
 from mc.net.minecraft.game.entity.player.EntityPlayer import EntityPlayer
 from mc.net.minecraft.game.entity.misc.EntityItem import EntityItem
@@ -64,6 +66,7 @@ class RenderManager:
         self.__entityRenderMap[EntityZombie] = RenderLiving(ModelZombie(), 0.5)
         self.__entityRenderMap[EntityPlayer] = RenderPlayer()
         self.__entityRenderMap[EntityGiantZombie] = RenderGiantZombie(ModelZombie(), 0.5, 6.0)
+        self.__entityRenderMap[EntityWitherStorm] = RenderWitherStorm()
         self.__entityRenderMap[EntityLiving] = RenderLiving(ModelBiped(), 0.5)
         self.__entityRenderMap[Entity] = RenderEntity()
         self.__entityRenderMap[EntityPainting] = RenderPainting()

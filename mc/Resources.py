@@ -65,7 +65,6 @@ textures.update({
     'mob/cinder.png': _createMobTexture((202, 71, 31), (248, 166, 42), (71, 31, 25)),
     'mob/chupacabra.png': _createMobTexture((92, 83, 61), (52, 48, 39), (185, 57, 48)),
     'mob/ventoraptor.png': _createMobTexture((161, 133, 87), (94, 103, 70), (47, 43, 35)),
-    'mob/witherstorm.png': _createMobTexture((48, 45, 59), (91, 77, 111), (23, 21, 31)),
 })
 
 
@@ -189,3 +188,19 @@ _applyTexturePatch('gui/logo.png', 0, 0, 256, 49,
     'j8ljXQP6~zcS{}0DbM`d~UzP@!uKfDM9{}SJdP0o7fKKpT<f%IImSu?NRQ|Lp_c6QoN70Al(DVx&it4dphUvA*~(iJGv`G^y4nP$'
     'Hri6OW%yK6*%yuyDg*028k!Vj`y6c0_rdCW+tjE+Q{u}lZQ4G)!`|oQa6jIMBj^JoHNbmF0%93=J^fR`}ms?KvRIaF`rw>N>;Lxm'
     '8@hXD_O}(R<e?ntYjrC-Hh~q^vsd?'))
+
+from pathlib import Path as _Path
+from pyglet import image as _image
+
+_witherStormImage = _image.load(str(
+    _Path(__file__).parent / 'resources' / 'texture' / 'mob' / 'witherstorm.png'
+))
+_witherStormPixels = _witherStormImage.get_data(
+    'RGBA', -_witherStormImage.width * 4
+)
+textures['mob/witherstorm.png'] = (
+    _witherStormImage.width,
+    _witherStormImage.height,
+    [value if value < 128 else value - 256 for value in _witherStormPixels]
+)
+del _witherStormImage, _witherStormPixels, _Path, _image
