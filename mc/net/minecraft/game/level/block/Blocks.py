@@ -201,7 +201,7 @@ class Blocks:
         self.stoneOvenActive = BlockFurnace(self, 62, True).setHardness(3.5).setLightValue(14.0 / 16.0)
         self.stoneOvenActive.stepSound = self.soundStoneFootstep
 
-        self.luckyBlock = BlockLuckyBlock(self, 63, 89).setHardness(1.5)
+        self.luckyBlock = BlockLuckyBlock(self, 63, 224).setHardness(1.5)
         self.luckyBlock.stepSound = self.soundStoneFootstep
 
 blocks = Blocks()
