@@ -20,6 +20,7 @@ cdef class EntityMap:
         public list entityGrid
         public list all
         list __tmp
+        list __updateSnapshot
 
     cdef insert(self, Entity entity)
     cdef remove(self, Entity entity)

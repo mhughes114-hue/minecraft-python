@@ -11,6 +11,7 @@ from mc.net.minecraft.game.entity.monster.EntityGiantZombie import EntityGiantZo
 from mc.net.minecraft.game.entity.monster.EntitySkeleton import EntitySkeleton
 from mc.net.minecraft.game.entity.monster.EntitySpider import EntitySpider
 from mc.net.minecraft.game.entity.monster.EntityVentoraptor import EntityVentoraptor
+from mc.net.minecraft.game.entity.monster.EntityWitherStorm import EntityWitherStorm
 from mc.net.minecraft.game.entity.monster.EntityZombie import EntityZombie
 from mc.net.minecraft.game.level.block.tileentity.TileEntityChest import TileEntityChest
 from mc.net.minecraft.game.level.block.tileentity.TileEntityFurnace import TileEntityFurnace
@@ -122,6 +123,8 @@ class LevelLoader:
             return EntityChupacabra(world)
         elif entityId == 'Ventoraptor':
             return EntityVentoraptor(world)
+        elif entityId == 'WitherStorm':
+            return EntityWitherStorm(world)
         elif entityId == 'Skeleton':
             return EntitySkeleton(world)
         elif entityId == 'Spider':

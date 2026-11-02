@@ -15,6 +15,7 @@ cdef class EntityMap:
         self.__slot2 = EntityMapSlot(self)
         self.all = []
         self.__tmp = []
+        self.__updateSnapshot = []
         self.width = w // 8
         self.depth = h // 8
         self.height = d // 8
@@ -83,7 +84,8 @@ cdef class EntityMap:
         cdef Entity entity
         cdef EntityMapSlot oldSlot, newSlot
 
-        for entity in list(self.all):
+        self.__updateSnapshot[:] = self.all
+        for entity in self.__updateSnapshot:
             entity.lastTickPosX = entity.posX
             entity.lastTickPosY = entity.posY
             entity.lastTickPosZ = entity.posZ

@@ -65,6 +65,7 @@ textures.update({
     'mob/cinder.png': _createMobTexture((202, 71, 31), (248, 166, 42), (71, 31, 25)),
     'mob/chupacabra.png': _createMobTexture((92, 83, 61), (52, 48, 39), (185, 57, 48)),
     'mob/ventoraptor.png': _createMobTexture((161, 133, 87), (94, 103, 70), (47, 43, 35)),
+    'mob/witherstorm.png': _createMobTexture((48, 45, 59), (91, 77, 111), (23, 21, 31)),
 })
 
 

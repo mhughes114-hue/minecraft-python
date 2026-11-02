@@ -10,6 +10,7 @@ from mc.net.minecraft.game.entity.monster.EntityGiantZombie import EntityGiantZo
 from mc.net.minecraft.game.entity.monster.EntitySkeleton import EntitySkeleton
 from mc.net.minecraft.game.entity.monster.EntitySpider import EntitySpider
 from mc.net.minecraft.game.entity.monster.EntityVentoraptor import EntityVentoraptor
+from mc.net.minecraft.game.entity.monster.EntityWitherStorm import EntityWitherStorm
 from mc.net.minecraft.game.entity.monster.EntityZombie import EntityZombie
 from mc.net.minecraft.game.entity.monster.EntityMob import EntityMob
 from mc.JavaUtils import random
@@ -25,6 +26,7 @@ SPAWN_EGG_ENTITIES = (
     ('Cinder', EntityCinder),
     ('Chupacabra', EntityChupacabra),
     ('Ventoraptor', EntityVentoraptor),
+    ('Wither Storm', EntityWitherStorm),
 )
 
 ENTITY_TYPES = {
@@ -33,6 +35,7 @@ ENTITY_TYPES = {
 }
 ENTITY_TYPES['giant'] = EntityGiantZombie
 ENTITY_TYPES['giantzombie'] = EntityGiantZombie
+ENTITY_TYPES['witherstorm'] = EntityWitherStorm
 
 
 class MobSpawner:
