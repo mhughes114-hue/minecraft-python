@@ -1,5 +1,6 @@
 from mc.net.minecraft.game.entity.monster.EntityGiantZombie import EntityGiantZombie
 from mc.net.minecraft.game.entity.monster.EntityMob import EntityMob
+from mc.net.minecraft.game.entity.EntityLiving import EntityLiving
 from mc.net.minecraft.game.level.block.Blocks import blocks
 from nbtlib.tag import Short
 
@@ -20,6 +21,7 @@ class EntityWitherStorm(EntityGiantZombie):
         return min(self.absorbedCount // 20, 3)
 
     def onLivingUpdate(self):
+        self._entityAge = 0
         super().onLivingUpdate()
         if self.isDead or self.health <= 0:
             return
@@ -59,6 +61,10 @@ class EntityWitherStorm(EntityGiantZombie):
             self._moveForward = self._moveSpeed * 1.5
             self._isJumping = player.posY > self.posY + 1.0
 
+    def onEntityUpdate(self):
+        self._entityAge = 0
+        EntityLiving.onEntityUpdate(self)
+
     def _findPlayerToAttack(self):
         player = self._worldObj.getPlayerEntity()
         return player if player and player.isEntityAlive() else None
@@ -85,8 +91,9 @@ class EntityWitherStorm(EntityGiantZombie):
             blocks.stoneOvenIdle.blockID, blocks.stoneOvenActive.blockID,
             blocks.luckyBlock.blockID
         )
+        maxBlocks = 2 ** (self.evolutionStage + 1)
         absorbed = 0
-        for _ in range(12):
+        for _ in range(maxBlocks * 8):
             x = int(self.posX) + self._rand.nextInt(11) - 5
             y = int(self.posY) + self._rand.nextInt(9) - 4
             z = int(self.posZ) + self._rand.nextInt(11) - 5
@@ -102,7 +109,7 @@ class EntityWitherStorm(EntityGiantZombie):
             if self._worldObj.setBlockWithNotify(x, y, z, 0):
                 self._recordAbsorption()
                 absorbed += 1
-                if absorbed == 2:
+                if absorbed == maxBlocks:
                     break
 
     def _recordAbsorption(self):
