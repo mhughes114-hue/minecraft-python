@@ -12,6 +12,7 @@ from mc.net.minecraft.game.item.ItemAxe import ItemAxe
 from mc.net.minecraft.game.item.ItemBow import ItemBow
 from mc.net.minecraft.game.item.ItemHoe import ItemHoe
 from mc.net.minecraft.game.item.ItemSpawnEgg import ItemSpawnEgg
+from mc.net.minecraft.game.item.ItemTsarBomba import ItemTsarBomba
 from mc.net.minecraft.game.item.Item import Item
 from mc.net.minecraft.game.level.block.Blocks import blocks
 
@@ -105,6 +106,7 @@ class Items:
 
         self.painting = ItemPainting(self, 65).setIconIndex(26)
         self.spawnEgg = ItemSpawnEgg(self, 66)
+        self.tsarBomba = ItemTsarBomba(self, 67).setIconIndex(40)
 
         for i in range(256):
             if blocks.blocksList[i]:

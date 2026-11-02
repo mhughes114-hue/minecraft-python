@@ -51,6 +51,7 @@ The creative catalog has item categories, pages, and spawn eggs; click an item t
 Press `/` to enter a command. Available commands include `/gamemode c|s`, `/give <item> [amount]`, `/spawn <entity> [count]` (also `/summon`), `/tp <x> <y> <z>` (also `/teleport`), `/spawnpoint`, `/time set <day|night|ticks>`, `/heal`, and `/clear`. Teleports accept relative coordinates such as `~5`. This is a local single-player command set, so give and teleport target only the current player.
 In creative mode, hold Space to fly up and Left Shift to fly down. Right-click a spawn egg to create its mob.
 Lucky Blocks are available in the creative catalog; breaking one can drop a random reward, spawn a hostile Lycanites mob, or cause an explosion.
+Right-click with the single-use Tsar Bomba to trigger a large, expanding crater and surrounding shockwave. It targets a Wither Storm along the player's view when possible and destroys the storm if it is caught in the blast. Obtain one with `/give tsarbomba`; it is also available in the creative catalog.
 The Wither Storm is a large boss with its own animated model and texture. It does not despawn, tracks and periodically chases the player, absorbs nearby mobs and terrain to evolve through larger, stronger stages, and attacks with increasingly powerful explosions. Terrain absorption grows exponentially with each stage: it can absorb up to 2, 4, 8, then 16 blocks per pulse. Spawn it with `/spawn witherstorm` or its spawn egg. Absorption changes terrain; bedrock, containers, rare blocks, TNT, obsidian, and Lucky Blocks are protected. The current world engine has no chunk system, so the boss cannot load distant chunks or render outside the loaded world.
 
 The Indev level generator is customizable and you can choose between the *Inland*, *Island*, *Floating*, and *Flat* level types.
@@ -83,4 +84,3 @@ Yeah ok but what I do is
 
 todo: add aether
 todo: clean up texture mapping/make it easier to add LOTS of content.
-todo: tsar code (kills witherstorm thing)

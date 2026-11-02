@@ -63,6 +63,7 @@ cdef class World:
         self.defaultFluid = blocks.waterMoving.blockID
 
         self.worldAccesses = []
+        self.tsarBombs = []
         self.__tickList = set()
 
         self.map = {}
@@ -391,6 +392,9 @@ cdef class World:
         self.entityMap.updateEntities()
         for entity in self.__list:
             entity.updateEntity()
+        for bomb in self.tsarBombs[:]:
+            if bomb.update():
+                self.tsarBombs.remove(bomb)
 
     def updateLighting(self):
         self.__lightUpdates.updateLight()

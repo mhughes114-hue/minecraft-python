@@ -37,6 +37,7 @@ cdef class World:
         public int defaultFluid
 
         public list worldAccesses
+        public list tsarBombs
         set __tickList
 
         public dict map
