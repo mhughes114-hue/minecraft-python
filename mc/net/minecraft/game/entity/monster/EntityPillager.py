@@ -13,7 +13,7 @@ class EntityPillager(EntityMob):
 
     def __init__(self, world):
         super().__init__(world)
-        self._texture = 'mob/skeleton.png'
+        self._texture = 'mob/pillager.png'
         self._moveSpeed = 0.7
         self._attackStrength = 3
 

@@ -8,11 +8,13 @@ import math
 
 class ModelRenderer:
 
-    def __init__(self, xTexOffs, yTexOffs):
+    def __init__(self, xTexOffs, yTexOffs, textureWidth=64, textureHeight=32):
         self.__corners = []
         self.__faces = []
         self.__textureOffsetX = xTexOffs
         self.__textureOffsetY = yTexOffs
+        self.__textureWidth = textureWidth
+        self.__textureHeight = textureHeight
         self.__rotationPointX = 0.0
         self.__rotationPointY = 0.0
         self.__rotationPointZ = 0.0
@@ -66,32 +68,38 @@ class ModelRenderer:
                                        self.__textureOffsetX + d + w,
                                        self.__textureOffsetY + d,
                                        self.__textureOffsetX + d + w + d,
-                                       self.__textureOffsetY + d + h)
+                                       self.__textureOffsetY + d + h,
+                                       self.__textureWidth, self.__textureHeight)
         self.__faces[1] = TexturedQuad([u0, l0, l3, u3],
                                        self.__textureOffsetX + 0,
                                        self.__textureOffsetY + d,
                                        self.__textureOffsetX + d,
-                                       self.__textureOffsetY + d + h)
+                                       self.__textureOffsetY + d + h,
+                                       self.__textureWidth, self.__textureHeight)
         self.__faces[2] = TexturedQuad([l1, l0, u0, u1],
                                        self.__textureOffsetX + d,
                                        self.__textureOffsetY + 0,
                                        self.__textureOffsetX + d + w,
-                                       self.__textureOffsetY + d)
+                                       self.__textureOffsetY + d,
+                                       self.__textureWidth, self.__textureHeight)
         self.__faces[3] = TexturedQuad([u2, u3, l3, l2],
                                        self.__textureOffsetX + d + w,
                                        self.__textureOffsetY + 0,
                                        self.__textureOffsetX + d + w + w,
-                                       self.__textureOffsetY + d)
+                                       self.__textureOffsetY + d,
+                                       self.__textureWidth, self.__textureHeight)
         self.__faces[4] = TexturedQuad([u1, u0, u3, u2],
                                        self.__textureOffsetX + d,
                                        self.__textureOffsetY + d,
                                        self.__textureOffsetX + d + w,
-                                       self.__textureOffsetY + d + h)
+                                       self.__textureOffsetY + d + h,
+                                       self.__textureWidth, self.__textureHeight)
         self.__faces[5] = TexturedQuad([l0, l1, l2, l3],
                                        self.__textureOffsetX + d + w + d,
                                        self.__textureOffsetY + d,
                                        self.__textureOffsetX + d + w + d + w,
-                                       self.__textureOffsetY + d + h)
+                                       self.__textureOffsetY + d + h,
+                                       self.__textureWidth, self.__textureHeight)
 
         if self.mirror:
             for face in self.__faces:

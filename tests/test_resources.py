@@ -64,6 +64,22 @@ class TextureResourceTests(unittest.TestCase):
                 width, height, _ = textures[texture_name]
                 self.assertEqual((width, height), (64, 32))
 
+    def test_faction_textures_are_loaded_at_model_atlas_size(self):
+        for texture_name in (
+            "mob/pillager.png",
+            "mob/villager.png",
+            "mob/pillager_tank.png",
+            "mob/villager_tank.png",
+            "mob/pillager_plane.png",
+            "mob/villager_plane.png",
+        ):
+            with self.subTest(texture_name=texture_name):
+                width, height, pixels = textures[texture_name]
+                self.assertEqual((width, height), (128, 128))
+                self.assertTrue(
+                    any(pixels[index] != 0 for index in range(3, len(pixels), 4))
+                )
+
 
 if __name__ == "__main__":
     unittest.main()

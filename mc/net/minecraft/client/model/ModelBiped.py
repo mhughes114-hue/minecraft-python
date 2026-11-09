@@ -5,27 +5,27 @@ import math
 
 class ModelBiped(ModelBase):
 
-    def __init__(self, translation=0.0, _=0.0):
-        self.bipedHead = ModelRenderer(0, 0)
+    def __init__(self, translation=0.0, _=0.0, textureWidth=64, textureHeight=32):
+        self.bipedHead = ModelRenderer(0, 0, textureWidth, textureHeight)
         self.bipedHead.addBox(-4.0, -8.0, -4.0, 8, 8, 8, translation)
         self.bipedHead.setRotationPoint(0.0, 0.0, 0.0)
-        self.bipedHeadwear = ModelRenderer(32, 0)
+        self.bipedHeadwear = ModelRenderer(32, 0, textureWidth, textureHeight)
         self.bipedHeadwear.addBox(-4.0, -8.0, -4.0, 8, 8, 8, translation + 0.5)
         self.bipedHeadwear.setRotationPoint(0.0, 0.0, 0.0)
-        self.bipedBody = ModelRenderer(16, 16)
+        self.bipedBody = ModelRenderer(16, 16, textureWidth, textureHeight)
         self.bipedBody.addBox(-4.0, 0.0, -2.0, 8, 12, 4, translation)
         self.bipedBody.setRotationPoint(0.0, 0.0, 0.0)
-        self.bipedRightArm = ModelRenderer(40, 16)
+        self.bipedRightArm = ModelRenderer(40, 16, textureWidth, textureHeight)
         self.bipedRightArm.addBox(-3.0, -2.0, -2.0, 4, 12, 4, translation)
         self.bipedRightArm.setRotationPoint(-5.0, 2.0, 0.0)
-        self.bipedLeftArm = ModelRenderer(40, 16)
+        self.bipedLeftArm = ModelRenderer(40, 16, textureWidth, textureHeight)
         self.bipedLeftArm.mirror = True
         self.bipedLeftArm.addBox(-1.0, -2.0, -2.0, 4, 12, 4, translation)
         self.bipedLeftArm.setRotationPoint(5.0, 2.0, 0.0)
-        self.bipedRightLeg = ModelRenderer(0, 16)
+        self.bipedRightLeg = ModelRenderer(0, 16, textureWidth, textureHeight)
         self.bipedRightLeg.addBox(-2.0, 0.0, -2.0, 4, 12, 4, translation)
         self.bipedRightLeg.setRotationPoint(-2.0, 12.0, 0.0)
-        self.bipedLeftLeg = ModelRenderer(0, 16)
+        self.bipedLeftLeg = ModelRenderer(0, 16, textureWidth, textureHeight)
         self.bipedLeftLeg.mirror = True
         self.bipedLeftLeg.addBox(-2.0, 0.0, -2.0, 4, 12, 4, translation)
         self.bipedLeftLeg.setRotationPoint(2.0, 12.0, 0.0)

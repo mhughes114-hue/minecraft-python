@@ -15,7 +15,7 @@ class FactionVehicle(EntityMob):
         super().__init__(world)
         self.faction = faction
         self.vehicle = vehicle
-        self._texture = 'mob/zombie.png' if faction == 'villager' else 'mob/skeleton.png'
+        self._texture = f'mob/{faction}_{vehicle if vehicle == "tank" else "plane"}.png'
         if vehicle == 'tank':
             self.health = 80
             self._attackStrength = 8

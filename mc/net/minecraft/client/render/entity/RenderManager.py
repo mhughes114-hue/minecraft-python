@@ -22,8 +22,12 @@ from mc.net.minecraft.client.model.ModelSkeleton import ModelSkeleton
 from mc.net.minecraft.client.model.ModelVentoraptor import ModelVentoraptor
 from mc.net.minecraft.client.model.ModelZombie import ModelZombie
 from mc.net.minecraft.client.model.ModelBiped import ModelBiped
-from mc.net.minecraft.client.model.ModelTank import ModelTank
-from mc.net.minecraft.client.model.ModelAircraft import ModelAircraft
+from mc.net.minecraft.client.model.ModelPillager import ModelPillager
+from mc.net.minecraft.client.model.ModelVillager import ModelVillager
+from mc.net.minecraft.client.model.ModelPillagerTank import ModelPillagerTank
+from mc.net.minecraft.client.model.ModelVillagerTank import ModelVillagerTank
+from mc.net.minecraft.client.model.ModelPillagerAircraft import ModelPillagerAircraft
+from mc.net.minecraft.client.model.ModelVillagerAircraft import ModelVillagerAircraft
 from mc.net.minecraft.game.entity.Entity import Entity
 from mc.net.minecraft.game.entity.EntityLiving import EntityLiving
 from mc.net.minecraft.game.entity.EntityPainting import EntityPainting
@@ -74,12 +78,12 @@ class RenderManager:
         self.__entityRenderMap[EntityCreeper] = RenderCreeper()
         self.__entityRenderMap[EntitySkeleton] = RenderLiving(ModelSkeleton(), 0.5)
         self.__entityRenderMap[EntityZombie] = RenderLiving(ModelZombie(), 0.5)
-        self.__entityRenderMap[EntityVillager] = RenderLiving(ModelBiped(), 0.5)
-        self.__entityRenderMap[EntityPillager] = RenderLiving(ModelSkeleton(), 0.5)
-        self.__entityRenderMap[EntityVillagerTank] = RenderLiving(ModelTank(), 1.8, 2.5)
-        self.__entityRenderMap[EntityPillagerTank] = RenderLiving(ModelTank(), 1.8, 2.5)
-        self.__entityRenderMap[EntityVillagerAircraft] = RenderLiving(ModelAircraft(), 2.0, 2.5)
-        self.__entityRenderMap[EntityPillagerAircraft] = RenderLiving(ModelAircraft(), 2.0, 2.5)
+        self.__entityRenderMap[EntityVillager] = RenderLiving(ModelVillager(), 0.5)
+        self.__entityRenderMap[EntityPillager] = RenderLiving(ModelPillager(), 0.5)
+        self.__entityRenderMap[EntityVillagerTank] = RenderLiving(ModelVillagerTank(), 1.8, 2.5)
+        self.__entityRenderMap[EntityPillagerTank] = RenderLiving(ModelPillagerTank(), 1.8, 2.5)
+        self.__entityRenderMap[EntityVillagerAircraft] = RenderLiving(ModelVillagerAircraft(), 2.0, 2.5)
+        self.__entityRenderMap[EntityPillagerAircraft] = RenderLiving(ModelPillagerAircraft(), 2.0, 2.5)
         self.__entityRenderMap[EntityPlayer] = RenderPlayer()
         self.__entityRenderMap[EntityGiantZombie] = RenderGiantZombie(ModelZombie(), 0.5, 6.0)
         self.__entityRenderMap[EntityWitherStorm] = RenderWitherStorm()

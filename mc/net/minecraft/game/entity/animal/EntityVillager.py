@@ -12,7 +12,7 @@ class EntityVillager(EntityAnimal):
 
     def __init__(self, world):
         super().__init__(world)
-        self._texture = 'char.png'
+        self._texture = 'mob/villager.png'
         self._moveSpeed = 0.65
         self._attackStrength = 3
 
