@@ -3,7 +3,6 @@
 cimport cython
 
 from mc.net.minecraft.client.render.Tessellator import tessellator
-from mc.JavaUtils import BufferUtils
 from mc import Resources
 from pyglet import gl
 
@@ -11,62 +10,45 @@ from pyglet import gl
 cdef class FontRenderer:
 
     def __init__(self, settings, name, textures):
-        cdef int w, h, i, xt, yt, xPixel, yPixel, pixel, x, y, col, r, g, b, ar
-        cdef bint emptyColumn
+        cdef int i, glyph_x, glyph_y, x, y, pixel, alpha
+        cdef int glyph_width, glyph_height
+        cdef int color, col, r, g, b, ar
 
-        self.__buffer = BufferUtils.createIntBuffer(1024)
         texture = Resources.textures[name]
-        w = texture[0]
-        h = texture[1]
+        self.__textureWidth = texture[0]
+        self.__textureHeight = texture[1]
+        glyph_width = self.__textureWidth // 16
+        glyph_height = self.__textureHeight // 16
+        if glyph_width <= 0 or glyph_height <= 0 or \
+           self.__textureWidth % 16 or self.__textureHeight % 16:
+            raise ValueError(f'Font texture {name} must contain a 16x16 glyph atlas')
+        self.__glyphWidth = glyph_width
+        self.__glyphHeight = glyph_height
+        self.__fontTextureName = textures.getTexture(name)
+
         rawPixels = texture[2]
 
-        for i in range(128):
-            xt = i % 16
-            yt = i // 16
-
-            emptyColumn = False
-            for x in range(8):
-                if emptyColumn:
-                    break
-
-                xPixel = (xt << 3) + x
-                emptyColumn = True
-                for y in range(8):
-                    if not emptyColumn:
-                        break
-
-                    yPixel = ((yt << 3) + y) * w
-                    pixel = rawPixels[xPixel + yPixel] & 255
-                    if pixel > 128:
-                        emptyColumn = False
-
-            if i == 32:
-                x = 4
-
-            self.__charWidth[i] = x
-
-        self.__fontTextureName = textures.getTexture(name)
-        self.__fontDisplayLists = gl.glGenLists(288)
-        t = tessellator
         for i in range(256):
-            gl.glNewList(self.__fontDisplayLists + i, gl.GL_COMPILE)
-            t.startDrawingQuads()
-            x = i % 16 << 3
-            y = i // 16 << 3
-            t.addVertexWithUV(0.0, 7.99, 0.0, x / 128.0, (y + 7.99) / 128.0)
-            t.addVertexWithUV(7.99, 7.99, 0.0, (x + 7.99) / 128.0, (y + 7.99) / 128.0)
-            t.addVertexWithUV(7.99, 0.0, 0.0, (x + 7.99) / 128.0, y / 128.0)
-            t.addVertexWithUV(0.0, 0.0, 0.0, x / 128.0, y / 128.0)
-            t.draw()
-            gl.glTranslatef(self.__charWidth[i], 0.0, 0.0)
-            gl.glEndList()
+            glyph_x = i % 16 * glyph_width
+            glyph_y = i // 16 * glyph_height
+            self.__charWidth[i] = 0
+            for x in range(glyph_width):
+                for y in range(glyph_height):
+                    pixel = ((glyph_y + y) * self.__textureWidth + glyph_x + x) * 4
+                    alpha = rawPixels[pixel + 3] & 255
+                    if alpha > 128:
+                        self.__charWidth[i] = x + 1
+
+        self.__charWidth[32] = glyph_width // 2
 
         i = 0
         while i < 32:
-            col = (i & 8) << 3
-            b = (i & 1) * 191 + col
-            g = ((i & 2) >> 1) * 191 + col
-            r = ((i & 4) >> 2) * 191 + col
+            col = (i >> 3 & 1) * 85
+            r = (i >> 2 & 1) * 170 + col
+            g = (i >> 1 & 1) * 170 + col
+            b = (i & 1) * 170 + col
+            if i == 6:
+                r += 85
             if settings.anaglyph:
                 ar = (r * 30 + g * 59 + b * 11) // 100
                 g = (r * 30 + g * 70) // 100
@@ -78,8 +60,9 @@ cdef class FontRenderer:
                 g //= 4
                 b //= 4
 
-            gl.glColor4f(r / 255.0, g / 255.0, b / 255.0, 1.0)
-            i += 3
+            color = r << 16 | g << 8 | b
+            self.__colorCode[i] = color
+            i += 1
 
     def drawStringWithShadow(self, str string, int x, int y, int color):
         self.__renderString(string, x + 1, y + 1, color, True)
@@ -89,61 +72,78 @@ cdef class FontRenderer:
         self.__renderString(string, x, y, color, False)
 
     cdef __renderString(self, str string, int x, int y, int color, bint darken=False):
-        cdef float r, g, b
-        cdef int i, cc
+        cdef int i, char_code, glyph_x, glyph_y, advance, draw_color
+        cdef float u0, u1, v0, v1, left, top
+        cdef int pen_x
 
         if string is None:
+            return
+        if not string:
             return
 
         if darken:
             color = (color & 0xFCFCFC) >> 2
 
         gl.glBindTexture(gl.GL_TEXTURE_2D, self.__fontTextureName)
-        r = (color >> 16 & 255) / 255.0
-        g = (color >> 8 & 255) / 255.0
-        b = (color & 255) / 255.0
-        gl.glColor4f(r, g, b, 1.0)
-        self.__buffer.clear()
-        gl.glPushMatrix()
-        gl.glTranslatef(x, y, 0.0)
+        draw_color = color
+        pen_x = x
+        t = tessellator
+        t.startDrawingQuads()
         i = 0
         while i < len(string):
-            while string[i] == '&' and len(string) > i + 1:
-                cc = '0123456789abcdef'.index(string[i + 1])
-                if cc < 0 or cc > 15:
-                    cc = 15
+            if string[i] == '&' and i + 1 < len(string):
+                code = string[i + 1].lower()
+                if code in '0123456789abcdef':
+                    color_index = '0123456789abcdef'.index(code)
+                    draw_color = self.__colorCode[color_index]
+                    if darken:
+                        draw_color = (draw_color & 0xFCFCFC) >> 2
+                    i += 2
+                    continue
 
-                self.__buffer.put(
-                    self.__fontDisplayLists + 256 + cc + (16 if darken else 0)
-                )
-                if self.__buffer.remaining() == 0:
-                    self.__buffer.flip()
-                    self.__buffer.glCallLists()
-                    self.__buffer.clear()
+            char_code = ord(string[i])
+            if char_code > 255:
+                char_code = ord('?')
+            advance = self.__charWidth[char_code]
+            if advance > 0:
+                glyph_x = char_code % 16 * self.__glyphWidth
+                glyph_y = char_code // 16 * self.__glyphHeight
+                u0 = glyph_x / self.__textureWidth
+                u1 = (glyph_x + self.__glyphWidth - 0.01) / self.__textureWidth
+                v0 = glyph_y / self.__textureHeight
+                v1 = (glyph_y + self.__glyphHeight - 0.01) / self.__textureHeight
+                left = pen_x
+                top = y
+                t.setColorOpaque_I(draw_color)
+                t.addVertexWithUV(left, top + self.__glyphHeight - 0.01, 0.0, u0, v1)
+                t.addVertexWithUV(left + self.__glyphWidth - 0.01,
+                                  top + self.__glyphHeight - 0.01, 0.0, u1, v1)
+                t.addVertexWithUV(left + self.__glyphWidth - 0.01, top, 0.0, u1, v0)
+                t.addVertexWithUV(left, top, 0.0, u0, v0)
 
-                i += 2
-
-            self.__buffer.put(self.__fontDisplayLists + ord(string[i]))
-            if self.__buffer.remaining() == 0:
-                self.__buffer.flip()
-                self.__buffer.glCallLists()
-                self.__buffer.clear()
-
+            pen_x += advance
             i += 1
 
-        self.__buffer.flip()
-        self.__buffer.glCallLists()
-        gl.glPopMatrix()
+        t.draw()
 
     def getStringWidth(self, str string):
-        cdef int length, i
+        cdef int length, i, char_code
 
         if string is None:
             return 0
         else:
             length = 0
-            for i, char in enumerate(string):
-                if char != '&':
-                    length += self.__charWidth[ord(char)]
+            i = 0
+            while i < len(string):
+                if string[i] == '&' and i + 1 < len(string) and \
+                   string[i + 1].lower() in '0123456789abcdef':
+                    i += 2
+                    continue
+
+                char_code = ord(string[i])
+                if char_code > 255:
+                    char_code = ord('?')
+                length += self.__charWidth[char_code]
+                i += 1
 
             return length
