@@ -45,6 +45,14 @@ class TextureResourceTests(unittest.TestCase):
         self.assertGreater(width, 0)
         self.assertGreater(height, 0)
 
+    def test_menu_background_is_loaded_as_a_texture(self):
+        width, height, pixels = textures["background.png"]
+        with Image.open(_TEXTURE_ROOT / "background.png") as source:
+            expected = source.convert("RGBA").tobytes()
+
+        self.assertEqual(bytes(value & 0xFF for value in pixels), expected)
+        self.assertEqual((width, height), (512, 512))
+
 
 if __name__ == "__main__":
     unittest.main()

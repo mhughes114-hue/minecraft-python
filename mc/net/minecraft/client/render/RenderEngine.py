@@ -12,7 +12,11 @@ class RenderEngine:
         self.__textureMap = {}
         self.__textureContentsMap = {}
         self.__singleIntBuffer = gl.GLuint(1)
-        self.__imageData = BufferUtils.createByteBuffer(262144)
+        maxTextureSize = max(
+            (width * height * 4 for width, height, _ in Resources.textures.values()),
+            default=262144
+        )
+        self.__imageData = BufferUtils.createByteBuffer(max(262144, maxTextureSize))
         self.__textureList = []
         self.__urlToImageDataMap = {}
         self.__clampTexture = False

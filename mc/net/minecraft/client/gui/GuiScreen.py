@@ -1,5 +1,6 @@
 from mc.net.minecraft.client.gui.Gui import Gui
 from mc.net.minecraft.client.render.Tessellator import tessellator
+from mc import Resources
 from pyglet import window, gl
 
 class GuiScreen(Gui):
@@ -62,15 +63,28 @@ class GuiScreen(Gui):
         gl.glDisable(gl.GL_LIGHTING)
         gl.glDisable(gl.GL_FOG)
         t = tessellator
-        gl.glBindTexture(gl.GL_TEXTURE_2D, self.mc.renderEngine.getTexture('dirt.png'))
+        gl.glBindTexture(
+            gl.GL_TEXTURE_2D,
+            self.mc.renderEngine.getTexture('background.png')
+        )
         gl.glColor4f(1.0, 1.0, 1.0, 1.0)
+        textureWidth, textureHeight, _ = Resources.textures['background.png']
+        textureAspect = textureWidth / textureHeight
+        screenAspect = self.width / self.height
+        u0, v0, u1, v1 = 0.0, 0.0, 1.0, 1.0
+        if screenAspect > textureAspect:
+            v0 = (1.0 - textureAspect / screenAspect) / 2.0
+            v1 = 1.0 - v0
+        else:
+            u0 = (1.0 - screenAspect / textureAspect) / 2.0
+            u1 = 1.0 - u0
+
         t.startDrawingQuads()
-        t.setColorOpaque_I(4210752)
-        t.addVertexWithUV(0.0, self.height, 0.0, 0.0, self.height / 32.0)
-        t.addVertexWithUV(self.width, self.height, 0.0, self.width / 32.0,
-                          self.height / 32.0)
-        t.addVertexWithUV(self.width, 0.0, 0.0, self.width / 32.0, 0.0)
-        t.addVertexWithUV(0.0, 0.0, 0.0, 0.0, 0.0)
+        t.setColorOpaque_I(16777215)
+        t.addVertexWithUV(0.0, self.height, 0.0, u0, v0)
+        t.addVertexWithUV(self.width, self.height, 0.0, u1, v0)
+        t.addVertexWithUV(self.width, 0.0, 0.0, u1, v1)
+        t.addVertexWithUV(0.0, 0.0, 0.0, u0, v1)
         t.draw()
 
     def doesGuiPauseGame(self):
