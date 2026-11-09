@@ -194,3 +194,6 @@ class EntityPlayer(EntityLiving):
 
     def displayGUIFurnace(self, furnaceInventory):
         pass
+
+    def displayGUITsarBomba(self, inventory):
+        pass

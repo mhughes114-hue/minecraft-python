@@ -51,7 +51,7 @@ The creative catalog has item categories, pages, and spawn eggs; click an item t
 Press `/` to enter a command. Available commands include `/gamemode c|s`, `/give <item> [amount]`, `/spawn <entity> [count]` (also `/summon`), `/tp <x> <y> <z>` (also `/teleport`), `/spawnpoint`, `/time set <day|night|ticks>`, `/heal`, and `/clear`. Teleports accept relative coordinates such as `~5`. This is a local single-player command set, so give and teleport target only the current player.
 In creative mode, hold Space to fly up and Left Shift to fly down. Right-click a spawn egg to create its mob.
 Lucky Blocks are available in the creative catalog; breaking one can drop a random reward, spawn a hostile Lycanites mob, or cause an explosion.
-Right-click with the single-use Tsar Bomba to trigger a large, expanding crater and surrounding shockwave. It targets a Wither Storm along the player's view when possible and destroys the storm if it is caught in the blast. Obtain one with `/give tsarbomba`; it is also available in the creative catalog.
+The Tsar Bomba is an assembly block with a GUI. Insert 1 TNT block, 8 gunpowder, and 1 diamond, then place a redstone torch next to it to detonate a much larger expanding crater and surrounding shockwave. The blast targets nearby Wither Storms and destroys them if caught in range. Obtain the block with `/give tsarbomba`; it is also available in the creative catalog.
 The Wither Storm is a large boss with its own animated model and texture. It does not despawn, tracks and periodically chases the player, absorbs nearby mobs and terrain to evolve through larger, stronger stages, and attacks with increasingly powerful explosions. Terrain absorption grows exponentially with each stage: it can absorb up to 2, 4, 8, then 16 blocks per pulse. Spawn it with `/spawn witherstorm` or its spawn egg. Absorption changes terrain; bedrock, containers, rare blocks, TNT, obsidian, and Lucky Blocks are protected. The current world engine has no chunk system, so the boss cannot load distant chunks or render outside the loaded world.
 
 The Indev level generator is customizable and you can choose between the *Inland*, *Island*, *Floating*, and *Flat* level types.
@@ -68,9 +68,11 @@ Porkchops, mushroom bowl soup, and bread will restore health. Check the Wiki for
 
 ### Additional Notes
 
-The `mc.resources` directory contains all of the textures and sounds that this version uses. However,
-the textures are only there for convenience, as all of the texture buffers are already preloaded
-in the `mc.Resources` module.
+The `mc.resources` directory contains the textures and sounds used by this version. Terrain textures
+are stored as individual 16-by-16 PNG files in `mc/resources/texture/terrain/tiles`; their numbered
+filenames retain the legacy row-major tile indices used by the block renderer. `mc.Resources`
+assembles these tiles into the runtime terrain atlas, while the other texture files are loaded
+directly. Keeping the source textures separate makes them easier to replace and maintain.
 
 This would have been much more challenging to work on without the great tools provided by [RetroMCP-Java](https://github.com/MCPHackers/RetroMCP-Java).
 

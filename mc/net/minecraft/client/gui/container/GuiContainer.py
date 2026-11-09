@@ -140,6 +140,8 @@ class GuiContainer(GuiScreen):
                                     return
 
                             return
+                    else:
+                        return
 
                 if stack.itemID != self.__itemStack.itemID:
                     if self.__itemStack.stackSize > slot.inventory.getInventoryStackLimit():

@@ -14,6 +14,8 @@ from mc.net.minecraft.game.level.block.BlockCrops import BlockCrops
 from mc.net.minecraft.game.level.block.BlockFlower import BlockFlower
 from mc.net.minecraft.game.level.block.BlockGravel import BlockGravel
 from mc.net.minecraft.game.level.block.BlockLuckyBlock import BlockLuckyBlock
+from mc.net.minecraft.game.level.block.BlockRedstoneTorch import BlockRedstoneTorch
+from mc.net.minecraft.game.level.block.BlockTsarBomba import BlockTsarBomba
 from mc.net.minecraft.game.level.block.BlockGlass import BlockGlass
 from mc.net.minecraft.game.level.block.BlockGrass import BlockGrass
 from mc.net.minecraft.game.level.block.BlockGears import BlockGears
@@ -203,5 +205,10 @@ class Blocks:
 
         self.luckyBlock = BlockLuckyBlock(self, 63, 224).setHardness(1.5)
         self.luckyBlock.stepSound = self.soundStoneFootstep
+
+        self.tsarBomba = BlockTsarBomba(self, 64).setHardness(5.0)
+        self.redstoneTorch = BlockRedstoneTorch(self, 65, 115).setHardness(0.0).setLightValue(
+            7.0 / 15.0
+        )
 
 blocks = Blocks()

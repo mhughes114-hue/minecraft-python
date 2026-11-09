@@ -77,6 +77,7 @@ class GuiCreativeInventory(GuiScreen):
             else:
                 decorative = {
                     blocks.sapling.blockID, blocks.torch.blockID,
+                    blocks.redstoneTorch.blockID,
                     blocks.bookShelf.blockID, blocks.glass.blockID,
                     blocks.chest.blockID, blocks.cog.blockID,
                     blocks.plantYellow.blockID, blocks.plantRed.blockID,

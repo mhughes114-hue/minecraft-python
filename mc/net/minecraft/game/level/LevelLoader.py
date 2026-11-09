@@ -15,6 +15,7 @@ from mc.net.minecraft.game.entity.monster.EntityWitherStorm import EntityWitherS
 from mc.net.minecraft.game.entity.monster.EntityZombie import EntityZombie
 from mc.net.minecraft.game.level.block.tileentity.TileEntityChest import TileEntityChest
 from mc.net.minecraft.game.level.block.tileentity.TileEntityFurnace import TileEntityFurnace
+from mc.net.minecraft.game.level.block.tileentity.TileEntityTsarBomba import TileEntityTsarBomba
 from mc.net.minecraft.game.level.block.Blocks import blocks
 from mc.net.minecraft.game.level.World import World
 
@@ -93,6 +94,8 @@ class LevelLoader:
                     entity = TileEntityChest()
                 elif entityType == 'Furnace':
                     entity = TileEntityFurnace()
+                elif entityType == 'TsarBomba':
+                    entity = TileEntityTsarBomba()
 
                 if entity:
                     x = pos % 1024

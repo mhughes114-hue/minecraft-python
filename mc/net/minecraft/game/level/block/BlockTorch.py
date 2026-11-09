@@ -4,7 +4,7 @@ from mc.net.minecraft.game.level.material.Material import Material
 class BlockTorch(Block):
 
     def __init__(self, blocks, blockId, tex):
-        super().__init__(blocks, 50, 80, Material.circuits)
+        super().__init__(blocks, blockId, tex, Material.circuits)
         self._setTickOnLoad(True)
 
     def getCollisionBoundingBoxFromPool(self, x, y, z):

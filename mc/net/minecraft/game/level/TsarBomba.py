@@ -4,17 +4,15 @@ import math
 
 
 class TsarBomba:
-    RADIUS = 24
-    COLUMNS_PER_TICK = 32
+    RADIUS = 64
+    COLUMNS_PER_TICK = 128
 
     def __init__(self, world, x, y, z):
         self.world = world
         self.x = int(math.floor(x))
         self.y = int(math.floor(y))
         self.z = int(math.floor(z))
-        self.radius = min(
-            self.RADIUS, max(1, min(world.width, world.length) // 2)
-        )
+        self.radius = self.RADIUS
         self.outerRadius = self.radius * 1.3125
         self.columns = self.__makeSpiral(math.ceil(self.outerRadius))
         self.nextColumn = 0

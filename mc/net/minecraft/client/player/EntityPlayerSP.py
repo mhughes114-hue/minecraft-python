@@ -2,6 +2,7 @@ from mc.net.minecraft.client.effect.EntityPickupFX import EntityPickupFX
 from mc.net.minecraft.client.gui.container.GuiCrafting import GuiCrafting
 from mc.net.minecraft.client.gui.container.GuiFurnace import GuiFurnace
 from mc.net.minecraft.client.gui.container.GuiChest import GuiChest
+from mc.net.minecraft.client.gui.container.GuiTsarBomba import GuiTsarBomba
 from mc.net.minecraft.game.entity.player.EntityPlayer import EntityPlayer
 from mc.net.minecraft.game.item.ItemStack import ItemStack
 from nbtlib.tag import Compound, List, Byte, Int
@@ -83,6 +84,9 @@ class EntityPlayerSP(EntityPlayer):
 
     def displayGUIFurnace(self, furnaceInventory):
         self.__mc.displayGuiScreen(GuiFurnace(self.inventory, furnaceInventory))
+
+    def displayGUITsarBomba(self, inventory):
+        self.__mc.displayGuiScreen(GuiTsarBomba(self.inventory, inventory))
 
     def destroyCurrentEquippedItem(self):
         self.inventory.setInventorySlotContents(self.inventory.currentItem, None)
