@@ -20,12 +20,12 @@ class FactionVehicle(EntityMob):
             self.health = 80
             self._attackStrength = 8
             self._moveSpeed = 0.45
-            self.setSize(1.5, 1.2)
+            self.setSize(3.2, 1.8)
         else:
             self.health = 50
             self._attackStrength = 5
             self._moveSpeed = 0.7
-            self.setSize(1.6, 0.8)
+            self.setSize(4.5, 1.8)
             self._isCreativeFlying = True
             self._creativeFlightMultiplier = 8.0
 
@@ -90,7 +90,10 @@ class FactionVehicle(EntityMob):
 
         dx = entity.posX - self.posX
         dz = entity.posZ - self.posZ
-        bolt = EntityLaserBolt(self._worldObj, self, targetType, color)
+        bolt = EntityLaserBolt(
+            self._worldObj, self, targetType, color,
+            explosive=self.vehicle == 'tank'
+        )
         bolt.posY += self._getEyeHeight() - 0.1
         dy = entity.posY + entity.height * 0.5 - bolt.posY
         lead = math.sqrt(dx * dx + dz * dz) * 0.12

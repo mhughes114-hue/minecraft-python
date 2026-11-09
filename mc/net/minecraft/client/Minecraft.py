@@ -946,15 +946,21 @@ class Minecraft(window.Window):
         self.setLevel(levelGen.generate(name, width, height, length))
 
     def setLevel(self, world):
-        if self.theWorld:
-            self.theWorld.setLevel()
+        oldWorld = self.theWorld
+        if oldWorld:
+            oldWorld.setLevel()
 
         self.theWorld = world
-        if not world:
-            self.thePlayer = None
+        self.thePlayer = None
 
         if self.renderGlobal:
             self.renderGlobal.changeWorld(world)
+
+        if not world and self.playerController:
+            self.playerController.onWorldChange(world)
+
+        if not world and self.effectRenderer:
+            self.effectRenderer.clearEffects(world)
 
         if world:
             world.load()

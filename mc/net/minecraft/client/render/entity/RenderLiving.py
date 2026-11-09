@@ -5,10 +5,11 @@ import math
 
 class RenderLiving(Render):
 
-    def __init__(self, model, shadowSize):
+    def __init__(self, model, shadowSize, modelScale=1.0):
         super().__init__()
         self._mainModel = model
         self._shadowSize = shadowSize
+        self._modelScale = modelScale
         self.__renderPassModel = None
 
     def setRenderPassModel(self, model):
@@ -35,6 +36,7 @@ class RenderLiving(Render):
             gl.glScalef(-(1.0 / 16.0), -(1.0 / 16.0), 1.0 / 16.0)
             self._preRenderCallback(entity, a)
             gl.glTranslatef(0.0, -24.0, 0.0)
+            gl.glScalef(self._modelScale, self._modelScale, self._modelScale)
             gl.glEnable(gl.GL_NORMALIZE)
             y = entity.prevLimbYaw + (entity.limbYaw - entity.prevLimbYaw) * a
             x = entity.limbSwing - entity.limbYaw * (1.0 - a)

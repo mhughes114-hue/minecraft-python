@@ -946,7 +946,8 @@ cdef class World:
             worldAccess.releaseEntitySkin(entity)
 
     @cython.cdivision(True)
-    def createExplosion(self, entity, float x, float y, float z, float radius):
+    def createExplosion(self, entity, float x, float y, float z, float radius,
+                        protectedBlockIds=None):
         cdef int minX, maxX, minY, maxY, minZ, maxZ, xx, yy, zz, posX, posY, posZ, \
                  blockId, pos, i
         cdef float xd, yd, zd, d, radX, radY, radZ, fallout, nextX, nextY, nextZ, \
@@ -984,7 +985,8 @@ cdef class World:
                             if blockId > 0:
                                 fallout -= ((<Block>blocks.blocksList[blockId]).getExplosionResistance() + 0.3) * 0.3
 
-                            if fallout > 0.0:
+                            if fallout > 0.0 and (protectedBlockIds is None or
+                                                   blockId not in protectedBlockIds):
                                 pos = posX + (posY << 10) + (posZ << 10 << 10)
                                 explodePositions.add(pos)
 
@@ -1056,6 +1058,10 @@ cdef class World:
                 self.spawnParticle('smoke', pX, pY, pZ, xr, yr, zr)
 
                 if blockId > 0:
+                    if protectedBlockIds is not None and \
+                       blockId in protectedBlockIds:
+                        continue
+
                     block = <Block>blocks.blocksList[blockId]
                     block.dropBlockAsItemWithChance(
                         self, posX, posY, posZ,

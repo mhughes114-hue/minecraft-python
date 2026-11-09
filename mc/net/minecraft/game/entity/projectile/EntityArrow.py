@@ -56,6 +56,12 @@ class EntityArrow(Entity):
         self.prevRotationPitch = self.rotationPitch = math.atan2(y, d) * 180.0 / math.pi
         self.__ticksInGround = 0
 
+    def getOwner(self):
+        return self.__owner
+
+    def _onImpact(self, hit):
+        pass
+
     def onEntityUpdate(self):
         super().onEntityUpdate()
         if self.arrowShake > 0:
@@ -119,6 +125,7 @@ class EntityArrow(Entity):
                         self, 'random.drr', 1.0,
                         1.2 / (self._rand.nextFloat() * 0.2 + 0.9)
                     )
+                    self._onImpact(hit)
                     self.setEntityDead()
                 else:
                     self.motionX *= -0.1
@@ -129,6 +136,7 @@ class EntityArrow(Entity):
                     self.__ticksInAir = 0
             else:
                 if self.isLaser:
+                    self._onImpact(hit)
                     self.setEntityDead()
                     return
 
