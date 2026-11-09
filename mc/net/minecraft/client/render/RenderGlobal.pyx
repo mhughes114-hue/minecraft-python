@@ -529,18 +529,20 @@ cdef class RenderGlobal:
         cdef int last, i
         cdef WorldRenderer chunk
 
-        self.__worldRenderersToUpdate = sorted(
-            self.__worldRenderersToUpdate,
-            key=cmp_to_key(RenderSorter(player).compare)
+        self.__worldRenderersToUpdate.sort(
+            key=lambda chunk: (
+                chunk.isInFrustum,
+                -chunk.distanceToEntitySquared(player)
+            )
         )
 
         last = len(self.__worldRenderersToUpdate) - 1
         for i in range(last + 1):
-            chunk = self.__worldRenderersToUpdate[last - i]
+            chunk = self.__worldRenderersToUpdate[-1]
             if chunk.distanceToEntitySquared(player) > 2500.0 and i > 4:
                 return
 
-            self.__worldRenderersToUpdate.remove(chunk)
+            self.__worldRenderersToUpdate.pop()
             chunk.updateRenderer()
             chunk.needsUpdate = False
 
