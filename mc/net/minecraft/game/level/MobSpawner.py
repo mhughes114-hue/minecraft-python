@@ -14,6 +14,10 @@ from mc.net.minecraft.game.entity.monster.EntityVentoraptor import EntityVentora
 from mc.net.minecraft.game.entity.monster.EntityWitherStorm import EntityWitherStorm
 from mc.net.minecraft.game.entity.monster.EntityZombie import EntityZombie
 from mc.net.minecraft.game.entity.monster.EntityPillager import EntityPillager
+from mc.net.minecraft.game.entity.monster.EntityPillagerAircraft import EntityPillagerAircraft
+from mc.net.minecraft.game.entity.monster.EntityPillagerTank import EntityPillagerTank
+from mc.net.minecraft.game.entity.monster.EntityVillagerAircraft import EntityVillagerAircraft
+from mc.net.minecraft.game.entity.monster.EntityVillagerTank import EntityVillagerTank
 from mc.net.minecraft.game.entity.monster.EntityMob import EntityMob
 from mc.JavaUtils import random
 
@@ -23,6 +27,10 @@ SPAWN_EGG_ENTITIES = (
     ('Villager', EntityVillager),
     ('Aegis', EntityAegis),
     ('Pillager', EntityPillager),
+    ('Villager Tank', EntityVillagerTank),
+    ('Pillager Tank', EntityPillagerTank),
+    ('Villager Aircraft', EntityVillagerAircraft),
+    ('Pillager Aircraft', EntityPillagerAircraft),
     ('Zombie', EntityZombie),
     ('Skeleton', EntitySkeleton),
     ('Creeper', EntityCreeper),
@@ -42,6 +50,14 @@ ENTITY_TYPES['giantzombie'] = EntityGiantZombie
 ENTITY_TYPES['witherstorm'] = EntityWitherStorm
 ENTITY_TYPES['villagers'] = EntityVillager
 ENTITY_TYPES['pillagers'] = EntityPillager
+ENTITY_TYPES.update({
+    'villagertank': EntityVillagerTank,
+    'pillagertank': EntityPillagerTank,
+    'villageraircraft': EntityVillagerAircraft,
+    'pillageraircraft': EntityPillagerAircraft,
+    'villagerplane': EntityVillagerAircraft,
+    'pillagerplane': EntityPillagerAircraft,
+})
 
 
 class MobSpawner:
@@ -52,7 +68,7 @@ class MobSpawner:
     def performSpawning(self):
         mobSize = self.__worldObj.width * self.__worldObj.length * \
                self.__worldObj.height * 20 // 64 // 64 // 64
-        mobSize //= 2
+        mobSize = mobSize * 2
         if self.__worldObj.difficultySetting == 0:
             mobSize = 0 // 4
         elif self.__worldObj.difficultySetting == 1:
@@ -62,19 +78,19 @@ class MobSpawner:
         elif self.__worldObj.difficultySetting == 3:
             mobSize = mobSize * 6 // 4
 
-        animalSize = self.__worldObj.width * self.__worldObj.length // 4000
+        animalSize = self.__worldObj.width * self.__worldObj.length * 3 // 4000
         totalMobs = self.__worldObj.entitiesInLevelList(EntityMob)
-        for i in range(4):
+        for i in range(8):
             if totalMobs >= mobSize:
                 break
 
             mobs = 0
-            choice = self.__worldObj.rand.nextInt(9)
+            choice = self.__worldObj.rand.nextInt(14)
             blockX = self.__worldObj.rand.nextInt(self.__worldObj.width)
             blockY = int(min(self.__worldObj.rand.nextFloat(),
                              self.__worldObj.rand.nextFloat()) * self.__worldObj.height)
             blockZ = self.__worldObj.rand.nextInt(self.__worldObj.length)
-            for j in range(2):
+            for j in range(3):
                 xx = blockX
                 yy = blockY
                 zz = blockZ
@@ -115,8 +131,16 @@ class MobSpawner:
                             mob = EntityChupacabra(self.__worldObj)
                         elif choice == 6:
                             mob = EntityVentoraptor(self.__worldObj)
-                        elif choice == 7:
+                        elif choice in (7, 8, 13):
                             mob = EntityPillager(self.__worldObj)
+                        elif choice == 9:
+                            mob = EntityVillagerTank(self.__worldObj)
+                        elif choice == 10:
+                            mob = EntityPillagerTank(self.__worldObj)
+                        elif choice == 11:
+                            mob = EntityVillagerAircraft(self.__worldObj)
+                        elif choice == 12:
+                            mob = EntityPillagerAircraft(self.__worldObj)
 
                         if isinstance(mob, EntityMob) and self.__worldObj.difficultySetting == 0:
                             mob = None
@@ -134,16 +158,16 @@ class MobSpawner:
             totalMobs += mobs
 
         totalAnimals = self.__worldObj.entitiesInLevelList(EntityAnimal)
-        for i in range(4):
+        for i in range(6):
             if totalAnimals >= animalSize:
                 break
 
             animals = 0
-            choice = self.__worldObj.rand.nextInt(4)
+            choice = self.__worldObj.rand.nextInt(7)
             blockX = self.__worldObj.rand.nextInt(self.__worldObj.width)
             blockY = self.__worldObj.rand.nextInt(self.__worldObj.height)
             blockZ = self.__worldObj.rand.nextInt(self.__worldObj.length)
-            for j in range(4):
+            for j in range(5):
                 xx = blockX
                 yy = blockY
                 zz = blockZ
@@ -176,7 +200,7 @@ class MobSpawner:
                             animal = EntitySheep(self.__worldObj)
                         elif choice == 2:
                             animal = EntityAegis(self.__worldObj)
-                        elif choice == 3:
+                        elif choice in (3, 4):
                             animal = EntityVillager(self.__worldObj)
 
                         if not animal or self.__worldObj.isBlockNormalCube(xx, yy, zz) or \

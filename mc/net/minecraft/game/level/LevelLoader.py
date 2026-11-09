@@ -15,6 +15,10 @@ from mc.net.minecraft.game.entity.monster.EntityVentoraptor import EntityVentora
 from mc.net.minecraft.game.entity.monster.EntityWitherStorm import EntityWitherStorm
 from mc.net.minecraft.game.entity.monster.EntityZombie import EntityZombie
 from mc.net.minecraft.game.entity.monster.EntityPillager import EntityPillager
+from mc.net.minecraft.game.entity.monster.EntityPillagerAircraft import EntityPillagerAircraft
+from mc.net.minecraft.game.entity.monster.EntityPillagerTank import EntityPillagerTank
+from mc.net.minecraft.game.entity.monster.EntityVillagerAircraft import EntityVillagerAircraft
+from mc.net.minecraft.game.entity.monster.EntityVillagerTank import EntityVillagerTank
 from mc.net.minecraft.game.level.block.tileentity.TileEntityChest import TileEntityChest
 from mc.net.minecraft.game.level.block.tileentity.TileEntityFurnace import TileEntityFurnace
 from mc.net.minecraft.game.level.block.tileentity.TileEntityTsarBomba import TileEntityTsarBomba
@@ -124,6 +128,14 @@ class LevelLoader:
             return EntityVillager(world)
         elif entityId == 'Pillager':
             return EntityPillager(world)
+        elif entityId == 'VillagerTank':
+            return EntityVillagerTank(world)
+        elif entityId == 'PillagerTank':
+            return EntityPillagerTank(world)
+        elif entityId == 'VillagerAircraft':
+            return EntityVillagerAircraft(world)
+        elif entityId == 'PillagerAircraft':
+            return EntityPillagerAircraft(world)
         elif entityId == 'Creeper':
             return EntityCreeper(world)
         elif entityId == 'Cinder':

@@ -11,6 +11,10 @@ class EntityArrow(Entity):
     def __init__(self, world, entity):
         super().__init__(world)
         self.__owner = entity
+        self.targetType = None
+        self.damage = 4
+        self.isLaser = False
+        self.laserColor = (1.0, 0.3, 0.2)
         self.__xTile = -1
         self.__yTile = -1
         self.__zTile = -1
@@ -92,7 +96,9 @@ class EntityArrow(Entity):
         )
         distance = 0.0
         for entity in entities:
-            if entity.canBeCollidedWith() and (entity != self.__owner or \
+            if entity.canBeCollidedWith() and \
+               (self.targetType is None or isinstance(entity, self.targetType)) and \
+               (entity != self.__owner or \
                                                self.__ticksInAir >= 5):
                 box = entity.boundingBox.expand(0.3, 0.3, 0.3);
                 eHit = box.calculateIntercept(posVec, motionVec);
@@ -107,7 +113,7 @@ class EntityArrow(Entity):
 
         if hit:
             if hit.entityHit:
-                if hit.entityHit.attackEntityFrom(self, 4):
+                if hit.entityHit.attackEntityFrom(self, self.damage):
                     self._worldObj.playSoundAtEntity(
                         self, 'random.drr', 1.0,
                         1.2 / (self._rand.nextFloat() * 0.2 + 0.9)
@@ -121,6 +127,10 @@ class EntityArrow(Entity):
                     self.prevRotationYaw += 180.0
                     self.__ticksInAir = 0
             else:
+                if self.isLaser:
+                    self.setEntityDead()
+                    return
+
                 self.__xTile = hit.blockX
                 self.__yTile = hit.blockY
                 self.__zTile = hit.blockZ

@@ -3,7 +3,7 @@ from mc.net.minecraft.game.entity.FactionAI import (
     findFactionTarget,
 )
 from mc.net.minecraft.game.entity.monster.EntityMob import EntityMob
-from mc.net.minecraft.game.entity.projectile.EntityArrow import EntityArrow
+from mc.net.minecraft.game.entity.projectile.EntityLaserBolt import EntityLaserBolt
 import math
 
 
@@ -37,8 +37,15 @@ class EntityPillager(EntityMob):
 
     def _findPlayerToAttack(self):
         from mc.net.minecraft.game.entity.animal.EntityVillager import EntityVillager
+        from mc.net.minecraft.game.entity.monster.EntityVillagerAircraft import EntityVillagerAircraft
+        from mc.net.minecraft.game.entity.monster.EntityVillagerTank import EntityVillagerTank
 
-        return findFactionTarget(self, EntityVillager)
+        for targetType in (EntityVillager, EntityVillagerTank, EntityVillagerAircraft):
+            target = findFactionTarget(self, targetType)
+            if target:
+                return target
+
+        return None
 
     def _attackEntity(self, entity, distance):
         if distance < 2.5:
@@ -51,16 +58,22 @@ class EntityPillager(EntityMob):
 
         xd = entity.posX - self.posX
         zd = entity.posZ - self.posZ
-        arrow = EntityArrow(self._worldObj, self)
-        arrow.posY += 1.0
-        yd = entity.posY + entity.height * 0.5 - arrow.posY
+        from mc.net.minecraft.game.entity.animal.EntityVillager import EntityVillager
+        from mc.net.minecraft.game.entity.monster.EntityVillagerAircraft import EntityVillagerAircraft
+        from mc.net.minecraft.game.entity.monster.EntityVillagerTank import EntityVillagerTank
+
+        targetType = next((kind for kind in (
+            EntityVillager, EntityVillagerTank, EntityVillagerAircraft
+        ) if isinstance(entity, kind)), None)
+        if targetType is None:
+            return
+
+        bolt = EntityLaserBolt(self._worldObj, self, targetType, (1.0, 0.3, 0.2))
+        bolt.posY += self._getEyeHeight() - 0.1
+        yd = entity.posY + entity.height * 0.5 - bolt.posY
         travelTime = math.sqrt(xd * xd + zd * zd) * 0.2
-        self._worldObj.playSoundAtEntity(
-            self, 'random.bow', 1.0,
-            1.0 / (self._rand.nextFloat() * 0.4 + 0.8)
-        )
-        self._worldObj.spawnEntityInWorld(arrow)
-        arrow.setArrowHeading(xd, yd + travelTime, zd, 0.6, 8.0)
+        self._worldObj.spawnEntityInWorld(bolt)
+        bolt.fireAt(xd, yd + travelTime, zd)
         self.attackTime = 35
         self.rotationYaw = math.degrees(math.atan2(zd, xd)) - 90.0
         self._hasAttacked = True

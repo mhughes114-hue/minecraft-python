@@ -3,6 +3,7 @@ from mc.net.minecraft.client.render.entity.RenderEntity import RenderEntity
 from mc.net.minecraft.client.render.entity.RenderPlayer import RenderPlayer
 from mc.net.minecraft.client.render.entity.RenderPainting import RenderPainting
 from mc.net.minecraft.client.render.entity.RenderArrow import RenderArrow
+from mc.net.minecraft.client.render.entity.RenderLaserBolt import RenderLaserBolt
 from mc.net.minecraft.client.render.entity.RenderLiving import RenderLiving
 from mc.net.minecraft.client.render.entity.RenderCreeper import RenderCreeper
 from mc.net.minecraft.client.render.entity.RenderSpider import RenderSpider
@@ -21,6 +22,8 @@ from mc.net.minecraft.client.model.ModelSkeleton import ModelSkeleton
 from mc.net.minecraft.client.model.ModelVentoraptor import ModelVentoraptor
 from mc.net.minecraft.client.model.ModelZombie import ModelZombie
 from mc.net.minecraft.client.model.ModelBiped import ModelBiped
+from mc.net.minecraft.client.model.ModelTank import ModelTank
+from mc.net.minecraft.client.model.ModelAircraft import ModelAircraft
 from mc.net.minecraft.game.entity.Entity import Entity
 from mc.net.minecraft.game.entity.EntityLiving import EntityLiving
 from mc.net.minecraft.game.entity.EntityPainting import EntityPainting
@@ -38,6 +41,11 @@ from mc.net.minecraft.game.entity.monster.EntityVentoraptor import EntityVentora
 from mc.net.minecraft.game.entity.monster.EntityWitherStorm import EntityWitherStorm
 from mc.net.minecraft.game.entity.monster.EntityZombie import EntityZombie
 from mc.net.minecraft.game.entity.monster.EntityPillager import EntityPillager
+from mc.net.minecraft.game.entity.monster.EntityPillagerAircraft import EntityPillagerAircraft
+from mc.net.minecraft.game.entity.monster.EntityPillagerTank import EntityPillagerTank
+from mc.net.minecraft.game.entity.monster.EntityVillagerAircraft import EntityVillagerAircraft
+from mc.net.minecraft.game.entity.monster.EntityVillagerTank import EntityVillagerTank
+from mc.net.minecraft.game.entity.projectile.EntityLaserBolt import EntityLaserBolt
 from mc.net.minecraft.game.entity.player.EntityPlayer import EntityPlayer
 from mc.net.minecraft.game.entity.misc.EntityItem import EntityItem
 from mc.net.minecraft.game.entity.misc.EntityTNTPrimed import EntityTNTPrimed
@@ -68,6 +76,10 @@ class RenderManager:
         self.__entityRenderMap[EntityZombie] = RenderLiving(ModelZombie(), 0.5)
         self.__entityRenderMap[EntityVillager] = RenderLiving(ModelBiped(), 0.5)
         self.__entityRenderMap[EntityPillager] = RenderLiving(ModelSkeleton(), 0.5)
+        self.__entityRenderMap[EntityVillagerTank] = RenderLiving(ModelTank(), 0.9)
+        self.__entityRenderMap[EntityPillagerTank] = RenderLiving(ModelTank(), 0.9)
+        self.__entityRenderMap[EntityVillagerAircraft] = RenderLiving(ModelAircraft(), 0.7)
+        self.__entityRenderMap[EntityPillagerAircraft] = RenderLiving(ModelAircraft(), 0.7)
         self.__entityRenderMap[EntityPlayer] = RenderPlayer()
         self.__entityRenderMap[EntityGiantZombie] = RenderGiantZombie(ModelZombie(), 0.5, 6.0)
         self.__entityRenderMap[EntityWitherStorm] = RenderWitherStorm()
@@ -75,6 +87,7 @@ class RenderManager:
         self.__entityRenderMap[Entity] = RenderEntity()
         self.__entityRenderMap[EntityPainting] = RenderPainting()
         self.__entityRenderMap[EntityArrow] = RenderArrow()
+        self.__entityRenderMap[EntityLaserBolt] = RenderLaserBolt()
         self.__entityRenderMap[EntityItem] = RenderItem()
         self.__entityRenderMap[EntityTNTPrimed] = RenderTNTPrimed()
         for render in self.__entityRenderMap.values():
