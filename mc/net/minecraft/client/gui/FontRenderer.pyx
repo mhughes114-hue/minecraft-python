@@ -15,7 +15,7 @@ cdef class FontRenderer:
         cdef bint emptyColumn
 
         self.__buffer = BufferUtils.createIntBuffer(1024)
-        texture = Resources.textures[name + '1']
+        texture = Resources.textures[name]
         w = texture[0]
         h = texture[1]
         rawPixels = texture[2]
@@ -45,7 +45,7 @@ cdef class FontRenderer:
 
             self.__charWidth[i] = x
 
-        self.__fontTextureName = textures.getTexture(name + '2')
+        self.__fontTextureName = textures.getTexture(name)
         self.__fontDisplayLists = gl.glGenLists(288)
         t = tessellator
         for i in range(256):

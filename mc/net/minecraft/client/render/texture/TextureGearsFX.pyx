@@ -17,17 +17,46 @@ cdef class TextureGearsFX(TextureFX):
         int __gearRotationDir
 
     def __init__(self, idx):
+        cdef int i, pixel
+        cdef long long packedColor
+
         TextureFX.__init__(self, blocks.cog.blockIndexInTexture + idx)
         self.__gearRotationDir = (idx << 1) - 1
         self.__gearRotation = 2
 
-        color = Resources.textures['misc/gear.png'][2]
-        for i in range(len(color)):
-            self.__gearColor[i] = color[i]
+        gearTexture = Resources.textures['misc/gear.png']
+        if gearTexture[0] != 32 or gearTexture[1] != 32:
+            raise ValueError('Gear texture must be 32x32 pixels')
 
-        color = Resources.textures['misc/gearmiddle.png'][2]
-        for i in range(len(color)):
-            self.__gearMiddleColor[i] = color[i]
+        color = gearTexture[2]
+        for i in range(1024):
+            pixel = i << 2
+            packedColor = (
+                (color[pixel + 3] & 255) << 24
+                | (color[pixel] & 255) << 16
+                | (color[pixel + 1] & 255) << 8
+                | (color[pixel + 2] & 255)
+            )
+            if packedColor >= 1 << 31:
+                packedColor -= 1 << 32
+            self.__gearColor[i] = <int>packedColor
+
+        gearMiddleTexture = Resources.textures['misc/gearmiddle.png']
+        if gearMiddleTexture[0] != 16 or gearMiddleTexture[1] != 16:
+            raise ValueError('Gear middle texture must be 16x16 pixels')
+
+        color = gearMiddleTexture[2]
+        for i in range(256):
+            pixel = i << 2
+            packedColor = (
+                (color[pixel + 3] & 255) << 24
+                | (color[pixel] & 255) << 16
+                | (color[pixel + 1] & 255) << 8
+                | (color[pixel + 2] & 255)
+            )
+            if packedColor >= 1 << 31:
+                packedColor -= 1 << 32
+            self.__gearMiddleColor[i] = <int>packedColor
 
     cpdef onTick(self):
         cdef int pixelX, pixelY, texX, texY, color, midColor, r, g, b, a, pixel
