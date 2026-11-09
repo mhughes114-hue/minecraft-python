@@ -6,6 +6,7 @@ class PlayerControllerCreative(PlayerController):
     def __init__(self, mc):
         super().__init__(mc)
         self.isInTestMode = True
+        self.__mobSpawner = None
 
     def onRespawn(self, player):
         player.inventory.mainInventory = [None] * len(player.inventory.mainInventory)
@@ -16,8 +17,10 @@ class PlayerControllerCreative(PlayerController):
 
     def onWorldChange(self, world):
         super().onWorldChange(world)
-        world.survivalWorld = False
-        self.__mobSpawner = MobSpawner(world)
+        self.__mobSpawner = None
+        if world:
+            world.survivalWorld = False
+            self.__mobSpawner = MobSpawner(world)
 
     def onUpdate(self):
         self.__mobSpawner.performSpawning()
