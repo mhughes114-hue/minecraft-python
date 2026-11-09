@@ -85,4 +85,3 @@ Yeah ok but what I do is
 
 
 todo: add aether
-todo: clean up texture mapping/make it easier to add LOTS of content.

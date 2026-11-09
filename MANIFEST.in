@@ -10,9 +10,8 @@ include LICENSE
 include README.md
 
 recursive-include mc *.pyx *.pxd *.ogg *.dll
-recursive-exclude mc/resources/texture *
+recursive-include mc/resources/texture *.png *.gif
 recursive-exclude * *.pyc
 recursive-exclude * *.pyd
-recursive-exclude * *.gif
 recursive-exclude * *.html
 recursive-exclude * *.c
