@@ -27,6 +27,7 @@ from mc.net.minecraft.game.entity.EntityPainting import EntityPainting
 from mc.net.minecraft.game.entity.animal.EntityAegis import EntityAegis
 from mc.net.minecraft.game.entity.animal.EntityPig import EntityPig
 from mc.net.minecraft.game.entity.animal.EntitySheep import EntitySheep
+from mc.net.minecraft.game.entity.animal.EntityVillager import EntityVillager
 from mc.net.minecraft.game.entity.monster.EntityChupacabra import EntityChupacabra
 from mc.net.minecraft.game.entity.monster.EntityCinder import EntityCinder
 from mc.net.minecraft.game.entity.monster.EntityCreeper import EntityCreeper
@@ -36,6 +37,7 @@ from mc.net.minecraft.game.entity.monster.EntitySpider import EntitySpider
 from mc.net.minecraft.game.entity.monster.EntityVentoraptor import EntityVentoraptor
 from mc.net.minecraft.game.entity.monster.EntityWitherStorm import EntityWitherStorm
 from mc.net.minecraft.game.entity.monster.EntityZombie import EntityZombie
+from mc.net.minecraft.game.entity.monster.EntityPillager import EntityPillager
 from mc.net.minecraft.game.entity.player.EntityPlayer import EntityPlayer
 from mc.net.minecraft.game.entity.misc.EntityItem import EntityItem
 from mc.net.minecraft.game.entity.misc.EntityTNTPrimed import EntityTNTPrimed
@@ -64,6 +66,8 @@ class RenderManager:
         self.__entityRenderMap[EntityCreeper] = RenderCreeper()
         self.__entityRenderMap[EntitySkeleton] = RenderLiving(ModelSkeleton(), 0.5)
         self.__entityRenderMap[EntityZombie] = RenderLiving(ModelZombie(), 0.5)
+        self.__entityRenderMap[EntityVillager] = RenderLiving(ModelBiped(), 0.5)
+        self.__entityRenderMap[EntityPillager] = RenderLiving(ModelSkeleton(), 0.5)
         self.__entityRenderMap[EntityPlayer] = RenderPlayer()
         self.__entityRenderMap[EntityGiantZombie] = RenderGiantZombie(ModelZombie(), 0.5, 6.0)
         self.__entityRenderMap[EntityWitherStorm] = RenderWitherStorm()

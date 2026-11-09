@@ -1,0 +1,69 @@
+from mc.net.minecraft.game.entity.FactionAI import (
+    breakObstructingBlock,
+    findFactionTarget,
+)
+from mc.net.minecraft.game.entity.monster.EntityMob import EntityMob
+from mc.net.minecraft.game.entity.projectile.EntityArrow import EntityArrow
+import math
+
+
+class EntityPillager(EntityMob):
+
+    def __init__(self, world):
+        super().__init__(world)
+        self._texture = 'mob/skeleton.png'
+        self._moveSpeed = 0.7
+        self._attackStrength = 3
+
+    def onLivingUpdate(self):
+        super().onLivingUpdate()
+        if self.ticksExisted % 40 == 0:
+            breakObstructingBlock(self, self._playerToAttack)
+
+    def _updatePlayerActionState(self):
+        super()._updatePlayerActionState()
+        target = self._playerToAttack
+        if not target or not target.isEntityAlive():
+            return
+
+        xd = target.posX - self.posX
+        zd = target.posZ - self.posZ
+        distanceSquared = xd * xd + zd * zd
+        if 9.0 < distanceSquared < 196.0:
+            self.rotationYaw = math.degrees(math.atan2(zd, xd)) - 90.0
+            strafeDirection = 1.0 if (self.ticksExisted // 20) % 2 else -1.0
+            self._moveStrafing = self._moveSpeed * strafeDirection
+            self._moveForward = -self._moveSpeed * 0.35
+
+    def _findPlayerToAttack(self):
+        from mc.net.minecraft.game.entity.animal.EntityVillager import EntityVillager
+
+        return findFactionTarget(self, EntityVillager)
+
+    def _attackEntity(self, entity, distance):
+        if distance < 2.5:
+            if self.attackTime == 0:
+                super()._attackEntity(entity, distance)
+            return
+
+        if distance >= 14.0 or self.attackTime != 0:
+            return
+
+        xd = entity.posX - self.posX
+        zd = entity.posZ - self.posZ
+        arrow = EntityArrow(self._worldObj, self)
+        arrow.posY += 1.0
+        yd = entity.posY + entity.height * 0.5 - arrow.posY
+        travelTime = math.sqrt(xd * xd + zd * zd) * 0.2
+        self._worldObj.playSoundAtEntity(
+            self, 'random.bow', 1.0,
+            1.0 / (self._rand.nextFloat() * 0.4 + 0.8)
+        )
+        self._worldObj.spawnEntityInWorld(arrow)
+        arrow.setArrowHeading(xd, yd + travelTime, zd, 0.6, 8.0)
+        self.attackTime = 35
+        self.rotationYaw = math.degrees(math.atan2(zd, xd)) - 90.0
+        self._hasAttacked = True
+
+    def _getEntityString(self):
+        return 'Pillager'

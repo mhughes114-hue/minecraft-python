@@ -3,6 +3,7 @@ from mc.net.minecraft.game.entity.EntityPainting import EntityPainting
 from mc.net.minecraft.game.entity.animal.EntityAegis import EntityAegis
 from mc.net.minecraft.game.entity.animal.EntityPig import EntityPig
 from mc.net.minecraft.game.entity.animal.EntitySheep import EntitySheep
+from mc.net.minecraft.game.entity.animal.EntityVillager import EntityVillager
 from mc.net.minecraft.game.entity.misc.EntityItem import EntityItem
 from mc.net.minecraft.game.entity.monster.EntityChupacabra import EntityChupacabra
 from mc.net.minecraft.game.entity.monster.EntityCinder import EntityCinder
@@ -13,6 +14,7 @@ from mc.net.minecraft.game.entity.monster.EntitySpider import EntitySpider
 from mc.net.minecraft.game.entity.monster.EntityVentoraptor import EntityVentoraptor
 from mc.net.minecraft.game.entity.monster.EntityWitherStorm import EntityWitherStorm
 from mc.net.minecraft.game.entity.monster.EntityZombie import EntityZombie
+from mc.net.minecraft.game.entity.monster.EntityPillager import EntityPillager
 from mc.net.minecraft.game.level.block.tileentity.TileEntityChest import TileEntityChest
 from mc.net.minecraft.game.level.block.tileentity.TileEntityFurnace import TileEntityFurnace
 from mc.net.minecraft.game.level.block.tileentity.TileEntityTsarBomba import TileEntityTsarBomba
@@ -118,6 +120,10 @@ class LevelLoader:
             return EntitySheep(world)
         elif entityId == 'Aegis':
             return EntityAegis(world)
+        elif entityId == 'Villager':
+            return EntityVillager(world)
+        elif entityId == 'Pillager':
+            return EntityPillager(world)
         elif entityId == 'Creeper':
             return EntityCreeper(world)
         elif entityId == 'Cinder':
