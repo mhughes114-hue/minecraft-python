@@ -4,6 +4,7 @@ from mc.net.minecraft.client.gui.GuiNewLevel import GuiNewLevel
 from mc.net.minecraft.client.gui.GuiSaveLevel import GuiSaveLevel
 from mc.net.minecraft.client.gui.GuiLoadLevel import GuiLoadLevel
 from mc.net.minecraft.client.gui.GuiButton import GuiButton
+from mc.net.minecraft.client.GuiMainMenu import GuiMainMenu
 from pyglet import window
 
 class GuiIngameMenu(GuiScreen):
@@ -18,6 +19,9 @@ class GuiIngameMenu(GuiScreen):
                                            self.height // 4 + 48, 'Save world..'))
         self._controlList.append(GuiButton(3, self.width // 2 - 100,
                                            self.height // 4 + 72, 'Load world..'))
+        self._controlList.append(GuiButton(5, self.width // 2 - 100,
+                                           self.height // 4 + 96,
+                                           'Back to main menu'))
         self._controlList.append(GuiButton(4, self.width // 2 - 100,
                                            self.height // 4 + 120, 'Back to game'))
         if not self.mc.session:
@@ -33,6 +37,9 @@ class GuiIngameMenu(GuiScreen):
             self.mc.displayGuiScreen(GuiSaveLevel(self))
         elif button.id == 3 and self.mc.session:
             self.mc.displayGuiScreen(GuiLoadLevel(self))
+        elif button.id == 5:
+            self.mc.setLevel(None)
+            self.mc.displayGuiScreen(GuiMainMenu())
         elif button.id == 4:
             self.mc.displayGuiScreen(None)
             self.mc.setIngameFocus()

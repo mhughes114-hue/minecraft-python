@@ -53,6 +53,17 @@ class TextureResourceTests(unittest.TestCase):
         self.assertEqual(bytes(value & 0xFF for value in pixels), expected)
         self.assertEqual((width, height), (512, 512))
 
+    def test_custom_mob_textures_are_loaded(self):
+        for texture_name in (
+            "mob/aegis.png",
+            "mob/cinder.png",
+            "mob/chupacabra.png",
+            "mob/ventoraptor.png",
+        ):
+            with self.subTest(texture_name=texture_name):
+                width, height, _ = textures[texture_name]
+                self.assertEqual((width, height), (64, 32))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -950,6 +950,12 @@ class Minecraft(window.Window):
             self.theWorld.setLevel()
 
         self.theWorld = world
+        if not world:
+            self.thePlayer = None
+
+        if self.renderGlobal:
+            self.renderGlobal.changeWorld(world)
+
         if world:
             world.load()
             self.playerController.onWorldChange(world)
@@ -966,9 +972,6 @@ class Minecraft(window.Window):
             if self.thePlayer:
                 self.thePlayer.movementInput = MovementInputFromOptions(self.options)
                 self.playerController.onRespawn(self.thePlayer)
-
-            if self.renderGlobal:
-                self.renderGlobal.changeWorld(world)
 
             if self.effectRenderer:
                 self.effectRenderer.clearEffects(world)
