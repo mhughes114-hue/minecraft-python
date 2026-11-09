@@ -8,6 +8,7 @@ import math
 
 
 class EntityVillager(EntityAnimal):
+    canDamageInCreative = True
 
     def __init__(self, world):
         super().__init__(world)
@@ -26,7 +27,7 @@ class EntityVillager(EntityAnimal):
         from mc.net.minecraft.game.entity.monster.EntityPillagerTank import EntityPillagerTank
 
         for targetType in (EntityPillager, EntityPillagerTank, EntityPillagerAircraft):
-            target = findFactionTarget(self, targetType)
+            target = findFactionTarget(self, targetType, 48.0)
             if target:
                 return target
 

@@ -180,8 +180,9 @@ cdef class EntityLiving(Entity):
     def attackEntityFrom(self, Entity entity, int damage):
         cdef float xd, zd, d
 
-        if not self._worldObj.survivalWorld:
-            return
+        if not self._worldObj.survivalWorld and \
+           not getattr(entity, 'canDamageInCreative', False):
+            return False
 
         self._entityAge = 0
         if self.health <= 0:

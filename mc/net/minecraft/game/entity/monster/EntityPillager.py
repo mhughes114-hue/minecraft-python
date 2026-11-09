@@ -8,6 +8,8 @@ import math
 
 
 class EntityPillager(EntityMob):
+    canDamageInCreative = True
+    canSpawnInDaylight = True
 
     def __init__(self, world):
         super().__init__(world)
@@ -41,7 +43,7 @@ class EntityPillager(EntityMob):
         from mc.net.minecraft.game.entity.monster.EntityVillagerTank import EntityVillagerTank
 
         for targetType in (EntityVillager, EntityVillagerTank, EntityVillagerAircraft):
-            target = findFactionTarget(self, targetType)
+            target = findFactionTarget(self, targetType, 48.0)
             if target:
                 return target
 

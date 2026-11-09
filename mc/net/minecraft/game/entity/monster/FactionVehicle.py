@@ -8,6 +8,8 @@ import math
 
 
 class FactionVehicle(EntityMob):
+    canDamageInCreative = True
+    canSpawnInDaylight = True
 
     def __init__(self, world, faction, vehicle):
         super().__init__(world)
@@ -46,7 +48,7 @@ class FactionVehicle(EntityMob):
             from mc.net.minecraft.game.entity.monster.EntityPillagerTank import EntityPillagerTank
 
             for targetType in (EntityPillager, EntityPillagerTank, EntityPillagerAircraft):
-                target = findFactionTarget(self, targetType, 28.0)
+                target = findFactionTarget(self, targetType, 48.0)
                 if target:
                     return target
 
@@ -56,12 +58,12 @@ class FactionVehicle(EntityMob):
         from mc.net.minecraft.game.entity.monster.EntityVillagerAircraft import EntityVillagerAircraft
         from mc.net.minecraft.game.entity.monster.EntityVillagerTank import EntityVillagerTank
 
-        target = findFactionTarget(self, EntityVillager, 28.0)
+        target = findFactionTarget(self, EntityVillager, 48.0)
         if target:
             return target
 
-        target = findFactionTarget(self, EntityVillagerTank, 28.0)
-        return target or findFactionTarget(self, EntityVillagerAircraft, 28.0)
+        target = findFactionTarget(self, EntityVillagerTank, 48.0)
+        return target or findFactionTarget(self, EntityVillagerAircraft, 48.0)
 
     def _attackEntity(self, entity, distance):
         if distance >= 30.0 or self.attackTime > 0:
@@ -103,4 +105,3 @@ class FactionVehicle(EntityMob):
 
     def _readEntityFromNBT(self, compound):
         super()._readEntityFromNBT(compound)
-

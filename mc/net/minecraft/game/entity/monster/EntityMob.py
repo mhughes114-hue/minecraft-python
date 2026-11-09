@@ -41,6 +41,9 @@ class EntityMob(EntityCreature):
             entity.attackEntityFrom(self, self._attackStrength)
 
     def _getBlockPathWeight(self, x, y, z):
+        if getattr(self, 'canSpawnInDaylight', False):
+            return 0.0
+
         return 0.5 - self._worldObj.getBrightness(x, y, z)
 
     def _writeEntityToNBT(self, compound):
@@ -53,5 +56,8 @@ class EntityMob(EntityCreature):
         return 'Monster'
 
     def getCanSpawnHere(self, x, y, z):
+        if getattr(self, 'canSpawnInDaylight', False):
+            return super().getCanSpawnHere(x, y, z)
+
         light = self._worldObj.getBlockLightValue(int(x), int(y), int(z))
         return light <= self._rand.nextInt(8) and super().getCanSpawnHere(x, y, z)

@@ -113,7 +113,8 @@ class EntityArrow(Entity):
 
         if hit:
             if hit.entityHit:
-                if hit.entityHit.attackEntityFrom(self, self.damage):
+                attacker = self.__owner if self.isLaser else self
+                if hit.entityHit.attackEntityFrom(attacker, self.damage):
                     self._worldObj.playSoundAtEntity(
                         self, 'random.drr', 1.0,
                         1.2 / (self._rand.nextFloat() * 0.2 + 0.9)

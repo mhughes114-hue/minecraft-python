@@ -1440,12 +1440,10 @@ cdef class World:
                str(self.__lightUpdates.debugLightUpdates())
 
     def setLevel(self):
-        cdef int i
         cdef RenderGlobal worldAccess
-        for i in range(len(self.worldAccesses)):
-            worldAccess = self.worldAccesses[i]
+        for worldAccess in self.worldAccesses:
             for entity in self.entityMap.all:
-                worldAccess.releaseEntitySkin(self.entityMap.all[i])
+                worldAccess.releaseEntitySkin(entity)
 
     cdef __updateChunkLight(self, int lightSubtracted):
         self.__lightUpdates.updateDaylightCycle(lightSubtracted)
