@@ -953,6 +953,9 @@ class Minecraft(window.Window):
         self.theWorld = world
         self.thePlayer = None
 
+        if world:
+            world.load()
+
         if self.renderGlobal:
             self.renderGlobal.changeWorld(world)
 
@@ -963,7 +966,6 @@ class Minecraft(window.Window):
             self.effectRenderer.clearEffects(world)
 
         if world:
-            world.load()
             self.playerController.onWorldChange(world)
             self.thePlayer = world.findSubclassOf(EntityPlayerSP)
             world.playerEntity = self.thePlayer
