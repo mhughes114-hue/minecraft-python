@@ -9,6 +9,9 @@ EntityPlayerSP = import_module(
 TsarBomba = import_module(
     'mc.net.minecraft.game.level.TsarBomba'
 ).TsarBomba
+EntityTsarCloudFX = import_module(
+    'mc.net.minecraft.client.effect.EntityTsarCloudFX'
+).EntityTsarCloudFX
 AxisAlignedBB = import_module(
     'mc.net.minecraft.game.physics.AxisAlignedBB'
 ).AxisAlignedBB
@@ -39,6 +42,12 @@ class TsarCloudAndSneakingTests(unittest.TestCase):
         self.assertGreater(len(particles), 40)
         self.assertTrue(all(particle[0] == 'tsar' for particle in particles))
         self.assertGreater(max(particle[2] for particle in particles), 50.0)
+
+    def test_tsar_cloud_particles_are_large_and_long_lived(self):
+        particle = EntityTsarCloudFX(None, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+
+        self.assertGreaterEqual(particle._particleScale, 15.0)
+        self.assertGreaterEqual(particle._particleMaxAge, 160)
 
     def test_sneak_movement_stops_at_the_supported_edge(self):
         class PlayerStub:

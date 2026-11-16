@@ -642,7 +642,7 @@ cdef class RenderGlobal:
         cdef float xd = self.__worldObj.playerEntity.posX - x
         cdef float yd = self.__worldObj.playerEntity.posY - y
         cdef float zd = self.__worldObj.playerEntity.posZ - z
-        cdef float maxDistanceSq = 9216.0 if particle == 'tsar' else 256.0
+        cdef float maxDistanceSq = 262144.0 if particle == 'tsar' else 256.0
         if xd * xd + yd * yd + zd * zd > maxDistanceSq:
             return
 
