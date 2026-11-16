@@ -27,6 +27,7 @@ class LevelUnloadTests(unittest.TestCase):
             renderEngine=Mock(),
             _Minecraft__textureWaterFX=SimpleNamespace(textureId=0),
             _Minecraft__textureLavaFX=SimpleNamespace(textureId=0),
+            _Minecraft__postSystemMessage=lambda _: None,
         )
 
         Minecraft.setLevel(minecraft, world)

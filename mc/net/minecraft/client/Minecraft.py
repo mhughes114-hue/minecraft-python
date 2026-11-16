@@ -31,6 +31,7 @@ from mc.net.minecraft.client.GameSettings import GameSettings
 from mc.net.minecraft.client.OpenGlCapsChecker import OpenGlCapsChecker
 from mc.net.minecraft.client.LoadingScreenRenderer import LoadingScreenRenderer
 from mc.net.minecraft.game.level.World import World
+from mc.net.minecraft.game.level.WorldEvents import WorldEvents
 from mc.net.minecraft.game.level.block.Blocks import blocks
 from mc.net.minecraft.game.item.Items import items
 from mc.net.minecraft.game.item.ItemStack import ItemStack
@@ -133,6 +134,7 @@ class Minecraft(window.Window):
         self.debug = ''
 
         self.__prevFrameTime = 0
+        self.__worldEvents = None
 
         self.inGameHasFocus = False
 
@@ -519,7 +521,8 @@ class Minecraft(window.Window):
         if name == 'help':
             return 'Commands: /gamemode <c|s>, /give <item> [amount], ' + \
                    '/spawn <entity> [count], /tp <x> <y> <z>, ' + \
-                   '/spawnpoint, /time set <day|night|ticks>, /heal, /clear'
+                   '/spawnpoint, /time set <day|night|ticks>, /heal, /clear, ' + \
+                   '/flood [start|stop|status], /sinkhole [player|mob|random]'
         if name == 'gamemode':
             if len(arguments) != 1:
                 return 'Usage: /gamemode <c|s>'
@@ -544,6 +547,30 @@ class Minecraft(window.Window):
             return self.__executeSpawnpoint(arguments)
         if name == 'time':
             return self.__executeTime(arguments)
+        if name in ('flood', 'noah', 'noahsflood', 'noahs-flood'):
+            if not self.__worldEvents:
+                return 'You must be in a world to use this command.'
+            if len(arguments) > 1:
+                return 'Usage: /flood [start|stop|status]'
+            action = arguments[0].lower() if arguments else 'start'
+            if action == 'start':
+                return self.__worldEvents.flood.start()
+            if action == 'stop':
+                return self.__worldEvents.flood.stop()
+            if action == 'status':
+                return self.__worldEvents.flood.status()
+            return 'Usage: /flood [start|stop|status]'
+        if name == 'sinkhole':
+            if not self.__worldEvents or not self.thePlayer:
+                return 'You must be in a world to use this command.'
+            if len(arguments) > 1:
+                return 'Usage: /sinkhole [player|mob|random]'
+            selector = arguments[0].lower() if arguments else 'random'
+            target = self.__worldEvents.selectSinkholeTarget(selector)
+            if not target:
+                return 'No living target is available for that sinkhole.'
+            self.__worldEvents.startSinkhole(target)
+            return 'A sinkhole has opened beneath its target!'
         if name == 'heal':
             if arguments:
                 return 'Usage: /heal'
@@ -916,6 +943,8 @@ class Minecraft(window.Window):
         if not self.isGamePaused:
             self.theWorld.updateEntities()
             self.theWorld.tick()
+            if self.__worldEvents:
+                self.__worldEvents.update()
         if not self.isGamePaused:
             self.theWorld.randomDisplayUpdates(int(self.thePlayer.posX),
                                                int(self.thePlayer.posY),
@@ -953,6 +982,7 @@ class Minecraft(window.Window):
 
         self.theWorld = world
         self.thePlayer = None
+        self.__worldEvents = None
 
         if world:
             world.load()
@@ -981,6 +1011,9 @@ class Minecraft(window.Window):
             if self.thePlayer:
                 self.thePlayer.movementInput = MovementInputFromOptions(self.options)
                 self.playerController.onRespawn(self.thePlayer)
+                self.__worldEvents = WorldEvents(
+                    world, self.__postSystemMessage
+                )
 
             if self.effectRenderer:
                 self.effectRenderer.clearEffects(world)
@@ -994,6 +1027,10 @@ class Minecraft(window.Window):
                 self.__textureLavaFX.textureId = tex
 
         gc.collect()
+
+    def __postSystemMessage(self, message):
+        if getattr(self, 'ingameGUI', None):
+            self.ingameGUI.addChatMessage(message)
 
 if __name__ == '__main__':
     fullscreen = False
