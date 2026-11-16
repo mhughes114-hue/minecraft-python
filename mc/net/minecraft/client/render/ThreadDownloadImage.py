@@ -4,6 +4,7 @@ from io import BytesIO
 from PIL import Image
 
 import urllib.request
+from urllib.error import HTTPError
 import traceback
 import json
 
@@ -56,5 +57,10 @@ class ThreadDownloadImage(Thread):
                     )
                 else:
                     self.__imageData.image = Image.open(BytesIO(r.read())).convert('RGBA')
+        except HTTPError as e:
+            if e.code == 429:
+                print('Skin download rate limited (HTTP 429); using the default skin.')
+            else:
+                print(traceback.format_exc())
         except:
             print(traceback.format_exc())

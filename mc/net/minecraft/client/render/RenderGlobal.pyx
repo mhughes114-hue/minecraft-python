@@ -158,7 +158,6 @@ cdef class RenderGlobal:
     def renderEntities(self, vec, Frustum frustum, float a):
         cdef int x, y, z, x0, y0, z0, x1, y1, z1, chunk
         cdef bint visible
-        cdef list entities
         cdef Entity entity
 
         RenderManager.instance.cacheActiveRenderInfo(self.__worldObj, self.__renderEngine,
@@ -167,39 +166,34 @@ cdef class RenderGlobal:
         self.__countEntitiesRendered = 0
         self.__countEntitiesHidden = 0
         eMap = self.__worldObj.entityMap
-        for x in range(eMap.width):
-            for y in range(eMap.depth):
-                for z in range(eMap.height):
-                    entities = eMap.entityGrid[(z * eMap.depth + y) * eMap.width + x]
-                    if not entities:
-                        continue
+        for entity in eMap.all:
+            self.__countEntitiesTotal += 1
+            x = max(0, min(eMap.width - 1, <int>(entity.posX // 8.0)))
+            y = max(0, min(eMap.depth - 1, <int>(entity.posY // 8.0)))
+            z = max(0, min(eMap.height - 1, <int>(entity.posZ // 8.0)))
+            x0 = (x << 3) + 4
+            y0 = (y << 3) + 4
+            z0 = (z << 3) + 4
+            if x0 < self.__worldObj.width and y0 < self.__worldObj.height and \
+               z0 < self.__worldObj.length:
+                x1 = x0 // 16
+                y1 = y0 // 16
+                z1 = z0 // 16
+                chunk = (z1 * self.__renderChunksTall + y1) * self.__renderChunksWide + x1
+                visible = self.__worldRenderers[chunk].isInFrustum and \
+                          self.__worldRenderers[chunk].isVisible
+            else:
+                visible = True
 
-                    x0 = (x << 3) + 4
-                    y0 = (y << 3) + 4
-                    z0 = (z << 3) + 4
-                    self.__countEntitiesTotal += len(entities)
-                    if x0 >= 0 and y0 >= 0 and z0 >= 0 and \
-                       x0 < self.__worldObj.width and y0 < self.__worldObj.height and \
-                       z0 < self.__worldObj.length:
-                        x1 = x0 // 16
-                        y1 = y0 // 16
-                        z1 = z0 // 16
-                        chunk = (z1 * self.__renderChunksTall + y1) * self.__renderChunksWide + x1
-                        visible = self.__worldRenderers[chunk].isInFrustum and \
-                                  self.__worldRenderers[chunk].isVisible
-                    else:
-                        visible = True
-
-                    if visible:
-                        for entity in entities:
-                            if entity.shouldRender(vec) and \
-                               frustum.isVisible(entity.boundingBox) and \
-                               (entity != self.__worldObj.playerEntity or \
-                                self.__mc.options.thirdPersonView):
-                                    self.__countEntitiesRendered += 1
-                                    RenderManager.instance.renderEntity(entity, a)
-                    else:
-                        self.__countEntitiesHidden += len(entities)
+            if visible:
+                if entity.shouldRender(vec) and \
+                   frustum.isVisible(entity.boundingBox) and \
+                   (entity != self.__worldObj.playerEntity or \
+                    self.__mc.options.thirdPersonView):
+                    self.__countEntitiesRendered += 1
+                    RenderManager.instance.renderEntity(entity, a)
+            else:
+                self.__countEntitiesHidden += 1
 
     def getDebugInfoRenders(self):
         return f'C: {self.__renderersBeingRendered} / {self.__renderersLoaded}' \
