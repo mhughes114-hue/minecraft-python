@@ -642,7 +642,8 @@ cdef class RenderGlobal:
         cdef float xd = self.__worldObj.playerEntity.posX - x
         cdef float yd = self.__worldObj.playerEntity.posY - y
         cdef float zd = self.__worldObj.playerEntity.posZ - z
-        if xd * xd + yd * yd + zd * zd > 256.0:
+        cdef float maxDistanceSq = 9216.0 if particle == 'tsar' else 256.0
+        if xd * xd + yd * yd + zd * zd > maxDistanceSq:
             return
 
         if particle == 'bubble':
@@ -672,6 +673,11 @@ cdef class RenderGlobal:
         elif particle == 'largesmoke':
             self.__mc.effectRenderer.addEffect(
                 EntitySmokeFX(self.__worldObj, x, y, z, 2.5)
+            )
+        elif particle == 'tsar':
+            from mc.net.minecraft.client.effect.EntityTsarCloudFX import EntityTsarCloudFX
+            self.__mc.effectRenderer.addEffect(
+                EntityTsarCloudFX(self.__worldObj, x, y, z, xr, yr, zr)
             )
 
     def playMusic(self, str music, float x, float y, float z, float _):

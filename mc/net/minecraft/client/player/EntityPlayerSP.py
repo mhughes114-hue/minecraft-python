@@ -28,6 +28,30 @@ class EntityPlayerSP(EntityPlayer):
 
         self._isJumping = self.movementInput.jump and not flying
 
+    def _hasSneakSupport(self, x, z):
+        box = self.boundingBox.cloneMove(x, -1.0, z)
+        return bool(self._worldObj.getCollidingBoundingBoxes(box))
+
+    def _getSneakSafeMovement(self, x, z):
+        while x != 0.0 and not self._hasSneakSupport(x, 0.0):
+            x = 0.0 if abs(x) < 0.05 else x - (0.05 if x > 0.0 else -0.05)
+
+        while z != 0.0 and not self._hasSneakSupport(0.0, z):
+            z = 0.0 if abs(z) < 0.05 else z - (0.05 if z > 0.0 else -0.05)
+
+        while x != 0.0 and z != 0.0 and not self._hasSneakSupport(x, z):
+            x = 0.0 if abs(x) < 0.05 else x - (0.05 if x > 0.0 else -0.05)
+            z = 0.0 if abs(z) < 0.05 else z - (0.05 if z > 0.0 else -0.05)
+
+        return x, z
+
+    def moveEntity(self, x, y, z):
+        if self.onGround and self.movementInput and self.movementInput.sneak and \
+           not self.__mc.playerController.isInTestMode:
+            x, z = self._getSneakSafeMovement(x, z)
+
+        super().moveEntity(x, y, z)
+
     def onLivingUpdate(self):
         self.movementInput.updatePlayerMoveState()
         flying = self.__mc.playerController.isInTestMode

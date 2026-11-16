@@ -50,7 +50,7 @@ cdef class AxisAlignedBB:
         return AxisAlignedBB(_x0, _y0, _z0, _x1, _y1, _z1)
 
     def cloneMove(self, xa, ya, za):
-        return AxisAlignedBB(self.minX + za, self.minY + ya, self.minZ + za,
+        return AxisAlignedBB(self.minX + xa, self.minY + ya, self.minZ + za,
                              self.maxX + xa, self.maxY + ya, self.maxZ + za)
 
     cdef float calculateXOffset(self, AxisAlignedBB c, float xa):

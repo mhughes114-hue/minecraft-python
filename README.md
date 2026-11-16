@@ -49,10 +49,10 @@ Creative flight speed can be adjusted with `creativeFlightMultiplier` in `option
 Press I to open your inventory (or the item catalog in creative mode), F5 for third person view and F7 to take an isometric screenshot.
 The creative catalog has item categories, pages, and spawn eggs; click an item to put a stack in the selected hotbar slot.
 Press `/` to enter a command. Available commands include `/gamemode c|s`, `/give <item> [amount]`, `/spawn <entity> [count]` (also `/summon`), `/tp <x> <y> <z>` (also `/teleport`), `/spawnpoint`, `/time set <day|night|ticks>`, `/heal`, and `/clear`. Teleports accept relative coordinates such as `~5`. This is a local single-player command set, so give and teleport target only the current player.
-In creative mode, hold Space to fly up and Left Shift to fly down. Right-click a spawn egg to create its mob.
+In creative mode, hold Space to fly up and Left Shift to fly down. On foot, hold Left Shift to sneak and avoid stepping off block edges. Right-click a spawn egg to create its mob.
 Lucky Blocks are available in the creative catalog; breaking one can drop a random reward, spawn a hostile Lycanites mob, or cause an explosion.
-Villagers and pillagers naturally spawn in larger groups and fight each other. Both factions use colored laser rifles, tanks, and aircraft; tanks are durable ground units with oversized explosive shells, and aircraft patrol above the battlefield at a much larger scale. Faction units can break ordinary blocks blocking their path, but leave bedrock, containers, ores, TNT, obsidian, Lucky Blocks, and the Tsar Bomba intact. Spawn people with `/spawn villager` or `/spawn pillager`, and vehicles with `/spawn villagertank`, `/spawn pillagertank`, `/spawn villageraircraft`, or `/spawn pillageraircraft`; all have creative spawn eggs.
-The Tsar Bomba is an assembly block with a GUI. Insert 1 TNT block, 8 gunpowder, and 1 diamond, then place a redstone torch next to it to detonate a much larger expanding crater and surrounding shockwave. The blast targets nearby Wither Storms and destroys them if caught in range. Obtain the block with `/give tsarbomba`; it is also available in the creative catalog.
+Villagers and pillagers naturally spawn in larger groups and fight each other. Both factions use colored laser rifles, tanks, and aircraft; tanks are durable ground units with oversized explosive shells, and aircraft patrol above the battlefield at a much larger scale and periodically drop Tsar Bombas on opposing units. Faction units can break ordinary blocks blocking their path, but leave bedrock, containers, ores, TNT, obsidian, Lucky Blocks, and the Tsar Bomba intact. Spawn people with `/spawn villager` or `/spawn pillager`, and vehicles with `/spawn villagertank`, `/spawn pillagertank`, `/spawn villageraircraft`, or `/spawn pillageraircraft`; all have creative spawn eggs.
+The Tsar Bomba is an assembly block with a GUI. Insert 1 TNT block, 8 gunpowder, and 1 diamond, then place a redstone torch next to it to detonate a much larger expanding crater and surrounding shockwave, crowned by a rising mushroom cloud. The blast targets nearby Wither Storms and destroys them if caught in range. Obtain the block with `/give tsarbomba`; it is also available in the creative catalog.
 The Wither Storm is a large boss with its own animated model and texture. It does not despawn, tracks and periodically chases the player, absorbs nearby mobs and terrain to evolve through larger, stronger stages, and attacks with increasingly powerful explosions. Terrain absorption grows exponentially with each stage: it can absorb up to 2, 4, 8, then 16 blocks per pulse. Spawn it with `/spawn witherstorm` or its spawn egg. Absorption changes terrain; bedrock, containers, rare blocks, TNT, obsidian, and Lucky Blocks are protected. The current world engine has no chunk system, so the boss cannot load distant chunks or render outside the loaded world.
 
 The Indev level generator is customizable and you can choose between the *Inland*, *Island*, *Floating*, and *Flat* level types.
@@ -82,3 +82,12 @@ All credit for Minecraft goes towards its creator Notch and Mojang Specification
 
 Yeah ok but what I do is
 .\.venv\Scripts\python.exe -m mc.net.minecraft.client.Minecraft
+
+
+-add landmines
+-add MLRS
+-add WRATH
+-add entire earth
+-add FPV drones
+-add debt
+-add LODs

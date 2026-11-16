@@ -17,6 +17,7 @@ class TsarBomba:
         self.columns = self.__makeSpiral(math.ceil(self.outerRadius))
         self.nextColumn = 0
         self.targetedStorms = []
+        self.__spawnMushroomCloud()
 
         from mc.net.minecraft.game.entity.monster.EntityWitherStorm import EntityWitherStorm
         for entity in world.entityMap.all:
@@ -29,6 +30,31 @@ class TsarBomba:
             if dx * dx + dy * dy + dz * dz <= \
                (self.outerRadius + entity.width * 0.5) ** 2:
                 self.targetedStorms.append(entity)
+
+    def __spawnMushroomCloud(self):
+        stemHeight = max(2, min(36, self.world.height - self.y - 8))
+        for level in range(0, stemHeight, 3):
+            radius = 0.5 + level * 0.035
+            for angle in (0.0, math.pi):
+                offsetX = math.cos(angle) * radius
+                offsetZ = math.sin(angle) * radius
+                self.world.spawnParticle(
+                    'tsar', self.x + 0.5 + offsetX, self.y + level,
+                    self.z + 0.5 + offsetZ, offsetX * 0.015, 0.12,
+                    offsetZ * 0.015
+                )
+
+        capY = min(self.world.height - 2, self.y + stemHeight + 5)
+        for radius, count in ((4.0, 12), (9.0, 20)):
+            for index in range(count):
+                angle = math.tau * index / count
+                offsetX = math.cos(angle) * radius
+                offsetZ = math.sin(angle) * radius
+                self.world.spawnParticle(
+                    'tsar', self.x + 0.5 + offsetX, capY,
+                    self.z + 0.5 + offsetZ, offsetX * 0.008, 0.08,
+                    offsetZ * 0.008
+                )
 
     @staticmethod
     def __makeSpiral(radius):

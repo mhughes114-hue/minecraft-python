@@ -10,11 +10,14 @@ import math
 class FactionVehicle(EntityMob):
     canDamageInCreative = True
     canSpawnInDaylight = True
+    TSAR_BOMBA_INITIAL_DELAY = 200
+    TSAR_BOMBA_COOLDOWN = 1200
 
     def __init__(self, world, faction, vehicle):
         super().__init__(world)
         self.faction = faction
         self.vehicle = vehicle
+        self._tsarBombCooldown = self.TSAR_BOMBA_INITIAL_DELAY
         self._texture = f'mob/{faction}_{vehicle if vehicle == "tank" else "plane"}.png'
         if vehicle == 'tank':
             self.health = 80
@@ -40,6 +43,25 @@ class FactionVehicle(EntityMob):
         super().onLivingUpdate()
         if self.ticksExisted % 40 == 0:
             breakObstructingBlock(self, self._playerToAttack)
+        self._updateTsarBomba()
+
+    def _updateTsarBomba(self):
+        if self.vehicle != 'aircraft' or self.health <= 0 or \
+           not self._playerToAttack or \
+           not self._playerToAttack.isEntityAlive():
+            return
+
+        if self._tsarBombCooldown > 0:
+            self._tsarBombCooldown -= 1
+            return
+
+        from mc.net.minecraft.game.level.TsarBomba import TsarBomba
+
+        target = self._playerToAttack
+        self._worldObj.tsarBombs.append(
+            TsarBomba(self._worldObj, target.posX, target.posY, target.posZ)
+        )
+        self._tsarBombCooldown = self.TSAR_BOMBA_COOLDOWN
 
     def _findPlayerToAttack(self):
         if self.faction == 'villager':
