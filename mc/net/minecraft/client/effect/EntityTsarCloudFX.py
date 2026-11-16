@@ -5,7 +5,7 @@ class EntityTsarCloudFX(EntitySmokeFX):
     SCALE = 20.0
 
     def __init__(self, world, x, y, z, xr, yr, zr):
-        super().__init__(world, x, y, z, self.SCALE)
+        super().__init__(world, x, y, z, self.SCALE * 5)
         self._motionX1 = xr
         self._motionY1 = yr
         self._motionZ1 = zr

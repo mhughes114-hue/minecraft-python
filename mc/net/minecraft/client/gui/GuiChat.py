@@ -14,6 +14,7 @@ class GuiChat(GuiScreen):
             if message:
                 result = self.mc.executeCommand(message)
                 self.mc.ingameGUI.addChatMessage(result)
+                self.mc.ingameGUI.addRandomBoratQuote()
 
             self.mc.displayGuiScreen(None)
             return

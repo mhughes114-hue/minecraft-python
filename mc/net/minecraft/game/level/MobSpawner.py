@@ -15,8 +15,10 @@ from mc.net.minecraft.game.entity.monster.EntityWitherStorm import EntityWitherS
 from mc.net.minecraft.game.entity.monster.EntityZombie import EntityZombie
 from mc.net.minecraft.game.entity.monster.EntityPillager import EntityPillager
 from mc.net.minecraft.game.entity.monster.EntityPillagerAircraft import EntityPillagerAircraft
+from mc.net.minecraft.game.entity.monster.EntityPillagerMLRS import EntityPillagerMLRS
 from mc.net.minecraft.game.entity.monster.EntityPillagerTank import EntityPillagerTank
 from mc.net.minecraft.game.entity.monster.EntityVillagerAircraft import EntityVillagerAircraft
+from mc.net.minecraft.game.entity.monster.EntityVillagerMLRS import EntityVillagerMLRS
 from mc.net.minecraft.game.entity.monster.EntityVillagerTank import EntityVillagerTank
 from mc.net.minecraft.game.entity.monster.EntityMob import EntityMob
 from mc.JavaUtils import random
@@ -31,6 +33,8 @@ SPAWN_EGG_ENTITIES = (
     ('Pillager Tank', EntityPillagerTank),
     ('Villager Aircraft', EntityVillagerAircraft),
     ('Pillager Aircraft', EntityPillagerAircraft),
+    ('Villager MLRS', EntityVillagerMLRS),
+    ('Pillager MLRS', EntityPillagerMLRS),
     ('Zombie', EntityZombie),
     ('Skeleton', EntitySkeleton),
     ('Creeper', EntityCreeper),
@@ -57,6 +61,8 @@ ENTITY_TYPES.update({
     'pillageraircraft': EntityPillagerAircraft,
     'villagerplane': EntityVillagerAircraft,
     'pillagerplane': EntityPillagerAircraft,
+    'villagermlrs': EntityVillagerMLRS,
+    'pillagermlrs': EntityPillagerMLRS,
 })
 
 
@@ -85,7 +91,7 @@ class MobSpawner:
                 break
 
             mobs = 0
-            choice = self.__worldObj.rand.nextInt(14)
+            choice = self.__worldObj.rand.nextInt(16)
             blockX = self.__worldObj.rand.nextInt(self.__worldObj.width)
             blockY = int(min(self.__worldObj.rand.nextFloat(),
                              self.__worldObj.rand.nextFloat()) * self.__worldObj.height)
@@ -141,6 +147,10 @@ class MobSpawner:
                             mob = EntityVillagerAircraft(self.__worldObj)
                         elif choice == 12:
                             mob = EntityPillagerAircraft(self.__worldObj)
+                        elif choice == 14:
+                            mob = EntityVillagerMLRS(self.__worldObj)
+                        elif choice == 15:
+                            mob = EntityPillagerMLRS(self.__worldObj)
 
                         if isinstance(mob, EntityMob) and self.__worldObj.difficultySetting == 0:
                             mob = None

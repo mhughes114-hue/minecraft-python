@@ -40,9 +40,11 @@ class EntityPillager(EntityMob):
     def _findPlayerToAttack(self):
         from mc.net.minecraft.game.entity.animal.EntityVillager import EntityVillager
         from mc.net.minecraft.game.entity.monster.EntityVillagerAircraft import EntityVillagerAircraft
+        from mc.net.minecraft.game.entity.monster.EntityVillagerMLRS import EntityVillagerMLRS
         from mc.net.minecraft.game.entity.monster.EntityVillagerTank import EntityVillagerTank
 
-        for targetType in (EntityVillager, EntityVillagerTank, EntityVillagerAircraft):
+        for targetType in (EntityVillager, EntityVillagerTank,
+                           EntityVillagerAircraft, EntityVillagerMLRS):
             target = findFactionTarget(self, targetType, 48.0)
             if target:
                 return target
@@ -62,10 +64,12 @@ class EntityPillager(EntityMob):
         zd = entity.posZ - self.posZ
         from mc.net.minecraft.game.entity.animal.EntityVillager import EntityVillager
         from mc.net.minecraft.game.entity.monster.EntityVillagerAircraft import EntityVillagerAircraft
+        from mc.net.minecraft.game.entity.monster.EntityVillagerMLRS import EntityVillagerMLRS
         from mc.net.minecraft.game.entity.monster.EntityVillagerTank import EntityVillagerTank
 
         targetType = next((kind for kind in (
-            EntityVillager, EntityVillagerTank, EntityVillagerAircraft
+            EntityVillager, EntityVillagerTank, EntityVillagerAircraft,
+            EntityVillagerMLRS
         ) if isinstance(entity, kind)), None)
         if targetType is None:
             return

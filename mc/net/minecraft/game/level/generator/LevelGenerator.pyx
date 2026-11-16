@@ -11,6 +11,7 @@ from libc.math cimport sqrt, sin, cos, pi
 
 from mc.net.minecraft.game.level.World cimport World
 from mc.net.minecraft.game.level.MobSpawner import MobSpawner
+from mc.net.minecraft.game.entity.misc.EntityLandmine import EntityLandmine
 from mc.net.minecraft.game.level.block.Block cimport Block
 from mc.net.minecraft.game.level.block.Blocks import blocks
 from mc.net.minecraft.game.level.generator.noise.NoiseGeneratorDistort cimport NoiseGeneratorDistort
@@ -320,6 +321,7 @@ cdef class LevelGenerator:
         spawner = MobSpawner(world)
         for i in range(1000):
             spawner.performSpawning()
+        self.__scatterLandmines(world)
 
         world.createTime = getMillis()
         world.authorName = userName
@@ -328,6 +330,35 @@ cdef class LevelGenerator:
         free(self.__blocksByteArray)
 
         return world
+
+    cdef __scatterLandmines(self, World world):
+        cdef int mineCount, placed, attempts, x, y, z, blockId
+        cdef double dx, dz
+        mineCount = max(1, self.__width * self.__depth // 512)
+        placed = 0
+        attempts = 0
+        while placed < mineCount and attempts < mineCount * 32:
+            attempts += 1
+            x = 1 + world.rand.nextInt(max(1, self.__width - 2))
+            z = 1 + world.rand.nextInt(max(1, self.__depth - 2))
+            dx = x + 0.5 - world.xSpawn
+            dz = z + 0.5 - world.zSpawn
+            if dx * dx + dz * dz < 144.0:
+                continue
+
+            for y in range(self.__height - 2, 0, -1):
+                blockId = world.getBlockId(x, y, z)
+                if blockId and blocks.opaqueCubeLookup[blockId]:
+                    aboveId = world.getBlockId(x, y + 1, z)
+                    if not blocks.opaqueCubeLookup[aboveId] and aboveId not in (
+                        blocks.waterMoving.blockID, blocks.waterStill.blockID,
+                        blocks.lavaMoving.blockID, blocks.lavaStill.blockID,
+                    ):
+                        mine = EntityLandmine(world)
+                        mine.setPosition(x + 0.5, y + 0.12, z + 0.5)
+                        world.spawnEntityInWorld(mine)
+                        placed += 1
+                    break
 
     @staticmethod
     cdef __generateHouse(World world):

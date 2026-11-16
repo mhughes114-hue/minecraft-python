@@ -5,10 +5,19 @@ from mc.net.minecraft.client.RenderHelper import RenderHelper
 from mc.JavaUtils import Random
 from pyglet import window, gl
 import math
+import random
 
 class GuiIngame(Gui):
     __itemRenderer = RenderItem()
     __rand = Random()
+    BORAT_QUOTES = (
+        'Very nice!',
+        'Great success!',
+        'I like to move it, move it!',
+        'This is my favorite thing in the whole world!',
+        'Na zdorovie!',
+        'What a nice house!',
+    )
 
     def __init__(self, minecraft):
         self.__mc = minecraft
@@ -154,3 +163,6 @@ class GuiIngame(Gui):
             chatMessage['updateCounter'] += 1
             if chatMessage['updateCounter'] >= 200:
                 self.__chatMessageList.remove(chatMessage)
+
+    def addRandomBoratQuote(self):
+        self.addChatMessage(random.choice(self.BORAT_QUOTES))

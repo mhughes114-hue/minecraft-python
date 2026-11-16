@@ -12,17 +12,20 @@ class FactionVehicle(EntityMob):
     canSpawnInDaylight = True
     TSAR_BOMBA_INITIAL_DELAY = 200
     TSAR_BOMBA_COOLDOWN = 1200
+    MLRS_COOLDOWN = 100
+    MLRS_RANGE = 72.0
 
     def __init__(self, world, faction, vehicle):
         super().__init__(world)
         self.faction = faction
         self.vehicle = vehicle
         self._tsarBombCooldown = self.TSAR_BOMBA_INITIAL_DELAY
-        self._texture = f'mob/{faction}_{vehicle if vehicle == "tank" else "plane"}.png'
-        if vehicle == 'tank':
+        self._mlrsCooldown = 60
+        self._texture = f'mob/{faction}_{"tank" if vehicle in ("tank", "mlrs") else "plane"}.png'
+        if vehicle in ('tank', 'mlrs'):
             self.health = 80
-            self._attackStrength = 8
-            self._moveSpeed = 0.45
+            self._attackStrength = 8 if vehicle == 'tank' else 4
+            self._moveSpeed = 0.45 if vehicle == 'tank' else 0.3
             self.setSize(3.2, 1.8)
         else:
             self.health = 50
@@ -44,6 +47,7 @@ class FactionVehicle(EntityMob):
         if self.ticksExisted % 40 == 0:
             breakObstructingBlock(self, self._playerToAttack)
         self._updateTsarBomba()
+        self._updateMLRS()
 
     def _updateTsarBomba(self):
         if self.vehicle != 'aircraft' or self.health <= 0 or \
@@ -63,14 +67,44 @@ class FactionVehicle(EntityMob):
         )
         self._tsarBombCooldown = self.TSAR_BOMBA_COOLDOWN
 
+    def _updateMLRS(self):
+        if self.vehicle != 'mlrs' or self.health <= 0 or \
+           not self._playerToAttack or \
+           not self._playerToAttack.isEntityAlive():
+            return
+
+        if self._mlrsCooldown > 0:
+            self._mlrsCooldown -= 1
+
+    def _fireMLRS(self, target):
+        from mc.net.minecraft.game.entity.projectile.EntityClusterShell import (
+            EntityClusterShell,
+        )
+
+        shell = EntityClusterShell(
+            self._worldObj, self, target.posX, target.posZ
+        )
+        shell.setLaunchPosition(
+            self.posX, self.posY + self.height * 0.5, self.posZ
+        )
+        self._worldObj.spawnEntityInWorld(shell)
+        self._mlrsCooldown = self.MLRS_COOLDOWN
+        self._hasAttacked = True
+        self.rotationYaw = math.degrees(math.atan2(
+            target.posZ - self.posZ, target.posX - self.posX
+        )) - 90.0
+
     def _findPlayerToAttack(self):
+        searchRange = self.MLRS_RANGE if self.vehicle == 'mlrs' else 48.0
         if self.faction == 'villager':
             from mc.net.minecraft.game.entity.monster.EntityPillager import EntityPillager
             from mc.net.minecraft.game.entity.monster.EntityPillagerAircraft import EntityPillagerAircraft
+            from mc.net.minecraft.game.entity.monster.EntityPillagerMLRS import EntityPillagerMLRS
             from mc.net.minecraft.game.entity.monster.EntityPillagerTank import EntityPillagerTank
 
-            for targetType in (EntityPillager, EntityPillagerTank, EntityPillagerAircraft):
-                target = findFactionTarget(self, targetType, 48.0)
+            for targetType in (EntityPillager, EntityPillagerTank,
+                               EntityPillagerAircraft, EntityPillagerMLRS):
+                target = findFactionTarget(self, targetType, searchRange)
                 if target:
                     return target
 
@@ -78,16 +112,44 @@ class FactionVehicle(EntityMob):
 
         from mc.net.minecraft.game.entity.animal.EntityVillager import EntityVillager
         from mc.net.minecraft.game.entity.monster.EntityVillagerAircraft import EntityVillagerAircraft
+        from mc.net.minecraft.game.entity.monster.EntityVillagerMLRS import EntityVillagerMLRS
         from mc.net.minecraft.game.entity.monster.EntityVillagerTank import EntityVillagerTank
 
-        target = findFactionTarget(self, EntityVillager, 48.0)
+        target = findFactionTarget(self, EntityVillager, searchRange)
         if target:
             return target
 
-        target = findFactionTarget(self, EntityVillagerTank, 48.0)
-        return target or findFactionTarget(self, EntityVillagerAircraft, 48.0)
+        target = findFactionTarget(self, EntityVillagerTank, searchRange)
+        return target or findFactionTarget(self, EntityVillagerAircraft, searchRange) or \
+               findFactionTarget(self, EntityVillagerMLRS, searchRange)
 
     def _attackEntity(self, entity, distance):
+        if self.vehicle == 'mlrs':
+            if distance < 12.0 or distance > self.MLRS_RANGE or \
+               self._mlrsCooldown > 0 or self.attackTime > 0:
+                return
+
+            from mc.net.minecraft.game.entity.animal.EntityVillager import EntityVillager
+            from mc.net.minecraft.game.entity.monster.EntityPillager import EntityPillager
+            from mc.net.minecraft.game.entity.monster.EntityPillagerAircraft import EntityPillagerAircraft
+            from mc.net.minecraft.game.entity.monster.EntityPillagerMLRS import EntityPillagerMLRS
+            from mc.net.minecraft.game.entity.monster.EntityPillagerTank import EntityPillagerTank
+            from mc.net.minecraft.game.entity.monster.EntityVillagerAircraft import EntityVillagerAircraft
+            from mc.net.minecraft.game.entity.monster.EntityVillagerMLRS import EntityVillagerMLRS
+            from mc.net.minecraft.game.entity.monster.EntityVillagerTank import EntityVillagerTank
+
+            enemyTypes = (
+                (EntityPillager, EntityPillagerTank, EntityPillagerAircraft,
+                 EntityPillagerMLRS)
+                if self.faction == 'villager' else
+                (EntityVillager, EntityVillagerTank, EntityVillagerAircraft,
+                 EntityVillagerMLRS)
+            )
+            if isinstance(entity, enemyTypes):
+                self._fireMLRS(entity)
+                self.attackTime = 30
+            return
+
         if distance >= 30.0 or self.attackTime > 0:
             return
 
@@ -96,14 +158,18 @@ class FactionVehicle(EntityMob):
             from mc.net.minecraft.game.entity.monster.EntityPillagerAircraft import EntityPillagerAircraft
             from mc.net.minecraft.game.entity.monster.EntityPillagerTank import EntityPillagerTank
 
-            targetTypes = (EntityPillager, EntityPillagerTank, EntityPillagerAircraft)
+            from mc.net.minecraft.game.entity.monster.EntityPillagerMLRS import EntityPillagerMLRS
+            targetTypes = (EntityPillager, EntityPillagerTank,
+                           EntityPillagerAircraft, EntityPillagerMLRS)
             color = (0.25, 0.9, 1.0)
         else:
             from mc.net.minecraft.game.entity.animal.EntityVillager import EntityVillager
             from mc.net.minecraft.game.entity.monster.EntityVillagerAircraft import EntityVillagerAircraft
+            from mc.net.minecraft.game.entity.monster.EntityVillagerMLRS import EntityVillagerMLRS
             from mc.net.minecraft.game.entity.monster.EntityVillagerTank import EntityVillagerTank
 
-            targetTypes = (EntityVillager, EntityVillagerTank, EntityVillagerAircraft)
+            targetTypes = (EntityVillager, EntityVillagerTank,
+                           EntityVillagerAircraft, EntityVillagerMLRS)
             color = (1.0, 0.3, 0.2)
 
         targetType = next((kind for kind in targetTypes if isinstance(entity, kind)), None)

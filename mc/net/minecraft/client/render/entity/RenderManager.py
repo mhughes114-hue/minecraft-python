@@ -10,6 +10,7 @@ from mc.net.minecraft.client.render.entity.RenderSpider import RenderSpider
 from mc.net.minecraft.client.render.entity.RenderSheep import RenderSheep
 from mc.net.minecraft.client.render.entity.RenderItem import RenderItem
 from mc.net.minecraft.client.render.entity.RenderTNTPrimed import RenderTNTPrimed
+from mc.net.minecraft.client.render.entity.RenderLandmine import RenderLandmine
 from mc.net.minecraft.client.render.entity.RenderGiantZombie import RenderGiantZombie
 from mc.net.minecraft.client.render.entity.RenderWitherStorm import RenderWitherStorm
 from mc.net.minecraft.client.model.ModelSheepFur import ModelSheepFur
@@ -28,6 +29,7 @@ from mc.net.minecraft.client.model.ModelPillagerTank import ModelPillagerTank
 from mc.net.minecraft.client.model.ModelVillagerTank import ModelVillagerTank
 from mc.net.minecraft.client.model.ModelPillagerAircraft import ModelPillagerAircraft
 from mc.net.minecraft.client.model.ModelVillagerAircraft import ModelVillagerAircraft
+from mc.net.minecraft.client.model.ModelMLRS import ModelMLRS
 from mc.net.minecraft.game.entity.Entity import Entity
 from mc.net.minecraft.game.entity.EntityLiving import EntityLiving
 from mc.net.minecraft.game.entity.EntityPainting import EntityPainting
@@ -49,9 +51,13 @@ from mc.net.minecraft.game.entity.monster.EntityPillagerAircraft import EntityPi
 from mc.net.minecraft.game.entity.monster.EntityPillagerTank import EntityPillagerTank
 from mc.net.minecraft.game.entity.monster.EntityVillagerAircraft import EntityVillagerAircraft
 from mc.net.minecraft.game.entity.monster.EntityVillagerTank import EntityVillagerTank
+from mc.net.minecraft.game.entity.monster.EntityPillagerMLRS import EntityPillagerMLRS
+from mc.net.minecraft.game.entity.monster.EntityVillagerMLRS import EntityVillagerMLRS
 from mc.net.minecraft.game.entity.projectile.EntityLaserBolt import EntityLaserBolt
+from mc.net.minecraft.game.entity.projectile.EntityClusterShell import EntityClusterShell
 from mc.net.minecraft.game.entity.player.EntityPlayer import EntityPlayer
 from mc.net.minecraft.game.entity.misc.EntityItem import EntityItem
+from mc.net.minecraft.game.entity.misc.EntityLandmine import EntityLandmine
 from mc.net.minecraft.game.entity.misc.EntityTNTPrimed import EntityTNTPrimed
 from mc.net.minecraft.game.entity.projectile.EntityArrow import EntityArrow
 from mc.net.minecraft.game.level.block.Blocks import blocks
@@ -82,6 +88,8 @@ class RenderManager:
         self.__entityRenderMap[EntityPillager] = RenderLiving(ModelPillager(), 0.5)
         self.__entityRenderMap[EntityVillagerTank] = RenderLiving(ModelVillagerTank(), 1.8, 2.5)
         self.__entityRenderMap[EntityPillagerTank] = RenderLiving(ModelPillagerTank(), 1.8, 2.5)
+        self.__entityRenderMap[EntityVillagerMLRS] = RenderLiving(ModelMLRS(), 1.8, 2.5)
+        self.__entityRenderMap[EntityPillagerMLRS] = RenderLiving(ModelMLRS(), 1.8, 2.5)
         self.__entityRenderMap[EntityVillagerAircraft] = RenderLiving(ModelVillagerAircraft(), 2.0, 2.5)
         self.__entityRenderMap[EntityPillagerAircraft] = RenderLiving(ModelPillagerAircraft(), 2.0, 2.5)
         self.__entityRenderMap[EntityPlayer] = RenderPlayer()
@@ -91,6 +99,8 @@ class RenderManager:
         self.__entityRenderMap[Entity] = RenderEntity()
         self.__entityRenderMap[EntityPainting] = RenderPainting()
         self.__entityRenderMap[EntityArrow] = RenderArrow()
+        self.__entityRenderMap[EntityClusterShell] = RenderArrow()
+        self.__entityRenderMap[EntityLandmine] = RenderLandmine()
         self.__entityRenderMap[EntityLaserBolt] = RenderLaserBolt()
         self.__entityRenderMap[EntityItem] = RenderItem()
         self.__entityRenderMap[EntityTNTPrimed] = RenderTNTPrimed()

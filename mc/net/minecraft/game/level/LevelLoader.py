@@ -5,6 +5,7 @@ from mc.net.minecraft.game.entity.animal.EntityPig import EntityPig
 from mc.net.minecraft.game.entity.animal.EntitySheep import EntitySheep
 from mc.net.minecraft.game.entity.animal.EntityVillager import EntityVillager
 from mc.net.minecraft.game.entity.misc.EntityItem import EntityItem
+from mc.net.minecraft.game.entity.misc.EntityLandmine import EntityLandmine
 from mc.net.minecraft.game.entity.monster.EntityChupacabra import EntityChupacabra
 from mc.net.minecraft.game.entity.monster.EntityCinder import EntityCinder
 from mc.net.minecraft.game.entity.monster.EntityCreeper import EntityCreeper
@@ -16,8 +17,11 @@ from mc.net.minecraft.game.entity.monster.EntityWitherStorm import EntityWitherS
 from mc.net.minecraft.game.entity.monster.EntityZombie import EntityZombie
 from mc.net.minecraft.game.entity.monster.EntityPillager import EntityPillager
 from mc.net.minecraft.game.entity.monster.EntityPillagerAircraft import EntityPillagerAircraft
+from mc.net.minecraft.game.entity.monster.EntityPillagerMLRS import EntityPillagerMLRS
 from mc.net.minecraft.game.entity.monster.EntityPillagerTank import EntityPillagerTank
 from mc.net.minecraft.game.entity.monster.EntityVillagerAircraft import EntityVillagerAircraft
+from mc.net.minecraft.game.entity.monster.EntityVillagerMLRS import EntityVillagerMLRS
+from mc.net.minecraft.game.entity.projectile.EntityClusterShell import EntityClusterShell
 from mc.net.minecraft.game.entity.monster.EntityVillagerTank import EntityVillagerTank
 from mc.net.minecraft.game.level.block.tileentity.TileEntityChest import TileEntityChest
 from mc.net.minecraft.game.level.block.tileentity.TileEntityFurnace import TileEntityFurnace
@@ -134,8 +138,16 @@ class LevelLoader:
             return EntityPillagerTank(world)
         elif entityId == 'VillagerAircraft':
             return EntityVillagerAircraft(world)
+        elif entityId == 'VillagerMLRS':
+            return EntityVillagerMLRS(world)
         elif entityId == 'PillagerAircraft':
             return EntityPillagerAircraft(world)
+        elif entityId == 'PillagerMLRS':
+            return EntityPillagerMLRS(world)
+        elif entityId == 'Landmine':
+            return EntityLandmine(world)
+        elif entityId == 'ClusterShell':
+            return EntityClusterShell(world)
         elif entityId == 'Creeper':
             return EntityCreeper(world)
         elif entityId == 'Cinder':
