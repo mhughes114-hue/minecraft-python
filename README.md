@@ -1,4 +1,4 @@
-## Minecraft: Python Edition
+## Minecraft: Python Edition: Banana edition
 
 ![Minecraft](/screenshot.png?raw=true)
 
