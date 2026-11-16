@@ -39,7 +39,7 @@ cdef class EntityLiving(Entity):
         self.stepHeight = 0.5
         self._moveStrafing = 0.0
         self._moveForward = 0.0
-        self.randomYawVelocity = 0.0
+        self.__randomYawVelocity = 0.0
         self._entityAge = 0
         self._isJumping = False
         self._isSprinting = False
@@ -178,7 +178,7 @@ cdef class EntityLiving(Entity):
         self.heartsLife = self.heartsHalvesLife // 2
 
     def attackEntityFrom(self, Entity entity, int damage):
-        cdef float xd, zd, d
+        cdef float xd, zd, scale, directionX, directionZ, directionLength
 
         if not self._worldObj.survivalWorld and \
            not getattr(entity, 'canDamageInCreative', False):
@@ -205,13 +205,20 @@ cdef class EntityLiving(Entity):
             xd = entity.posX - self.posX
             zd = entity.posZ - self.posZ
             self.attackedAtYaw = (atan2(zd, xd) * 180.0 / pi) - self.rotationYaw
-            d = sqrt(xd * xd + zd * zd)
             self.motionX /= 2.0
             self.motionY /= 2.0
             self.motionZ /= 2.0
-            self.motionX -= xd / d * 0.4
+            scale = max(abs(xd), abs(zd))
+            if scale > 0.0:
+                directionX = xd / scale
+                directionZ = zd / scale
+                directionLength = sqrt(
+                    directionX * directionX + directionZ * directionZ
+                )
+                self.motionX -= directionX / directionLength * 0.4
+                self.motionZ -= directionZ / directionLength * 0.4
+
             self.motionY += 0.4
-            self.motionZ -= zd / d * 0.4
             if self.motionY > 0.4:
                 self.motionY = 0.4
         else:

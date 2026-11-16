@@ -20,6 +20,8 @@ cdef class RenderGlobal:
         list __worldRenderersToUpdate
         list __sortedWorldRenderers
         list __worldRenderers
+        list __frustumRenderers
+        bint __updateSortNeeded
 
         RenderBlocks __globalRenderBlocks
 
@@ -46,6 +48,9 @@ cdef class RenderGlobal:
         float __prevSortX
         float __prevSortY
         float __prevSortZ
+        float __prevUpdateSortX
+        float __prevUpdateSortY
+        float __prevUpdateSortZ
 
         public float damagePartialTime
 

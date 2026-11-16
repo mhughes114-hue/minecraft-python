@@ -4,6 +4,7 @@ cimport cython
 
 import numpy as np
 cimport numpy as np
+from collections import deque
 
 from libc.stdlib cimport malloc, free
 
@@ -19,8 +20,8 @@ cdef class Light:
         self.__lightingUpdateCounter = 0
         self.__lightingUpdateList = []
         self.__lightingUpdateList3 = np.zeros(65536, dtype=np.int32)
-        self.__skyLightList = []
-        self.__blockLightList = []
+        self.__skyLightList = deque()
+        self.__blockLightList = deque()
         self.__lightingUpdateList1 = []
         self.__lightingUpdateList2 = []
         self.__metadataChunkBlock = None
@@ -55,9 +56,6 @@ cdef class Light:
         if self.__skylightSubtracted != 0:
             self.__lightValue = self.__worldObj.skylightSubtracted
             self.__worldObj.skylightSubtracted = lightSubtracted
-            while self.__metadataChunkBlock:
-                self.__updateLight(64)
-
             self.__metadataChunkBlock = MetadataChunkBlock(
                 self, 0, 0, 0, self.__worldObj.width, self.__worldObj.height,
                 self.__worldObj.length
@@ -154,7 +152,7 @@ cdef class Light:
         chunkLimit = 5
         while len(self.__skyLightList) > 0 and chunkLimit > 0:
             chunkLimit -= 1
-            chunk = self.__skyLightList.pop(0)
+            chunk = self.__skyLightList.popleft()
             for worldAccess in self.__worldObj.worldAccesses:
                 worldAccess.markBlockRangeNeedsUpdate(
                     chunk.x, chunk.y, chunk.z, chunk.maxX, chunk.maxY, chunk.maxZ
@@ -166,7 +164,7 @@ cdef class Light:
 
         for i in range(16):
             if self.__blockLightList:
-                chunk = self.__blockLightList.pop(0)
+                chunk = self.__blockLightList.popleft()
                 self.__updateLists(chunk.x, chunk.y, chunk.z,
                                    chunk.maxX, chunk.maxY, chunk.maxZ)
 

@@ -36,7 +36,7 @@ PyOgg requires that your system have one of the Opus, FLAC, or Vorbis codecs.
 
 For a manual Cython source build, run `python setup.py build_ext --inplace`.
 
-Run `python -m mc.net.minecraft.client.Minecraft` to launch the game. *Minecraft: Python Edition* should be compatible with any modern platform that supports OpenGL and Cython.
+Run `python -m mc.net.minecraft.client.Minecraft` with the Python environment where the dependencies are installed to launch the game. On Windows, if you use this repository's virtual environment, run `.\.venv\Scripts\python.exe -m mc.net.minecraft.client.Minecraft`; using a different Python installation can fail because the compiled extensions require NumPy. *Minecraft: Python Edition* should be compatible with any modern platform that supports OpenGL and Cython.
 
 Run with the argument `-fullscreen` to open the window in fullscreen mode (or press F11 in-game).
 The argument `-creative` will force the game to be in creative mode.
@@ -61,6 +61,7 @@ The Indev level generator is customizable and you can choose between the *Inland
 You can specify the world theme as *Normal*, *Hell* (lava and dirt instead of water and grass), *Paradise* (always daylight), *Woods*, or *Aether*.
 The *Aether* theme generates a bright sky world with floating islands; it can be selected independently of the world type.
 World size and world shape (*Square*, *Long*, *Deep*) may also be selected.
+For smoother frame pacing on large worlds, chunk meshes rebuild incrementally (at most two per frame), chunk sorting is cached until the player moves about one chunk, frustum checks and entity rendering are restricted to the configured view-distance area, lighting work runs on game ticks, and nearby entities use the entity grid for collision and landmine checks. Render distance can be lowered in Options. The renderer follows chunk-culling and incremental-rebuild principles, but remains on the legacy fixed-function OpenGL path; modern Sodium/Angelica renderers target newer Minecraft engines and are not drop-in compatible.
 
 Levels can be saved to a single *.mclevel* NBT file in the pause menu. The level files are perfectly compatible with Java and vice versa.
 

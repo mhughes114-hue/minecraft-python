@@ -321,9 +321,6 @@ class Minecraft(window.Window):
 
     def on_draw(self):
         try:
-            if self.theWorld:
-                self.theWorld.updateLighting()
-
             if self.isGamePaused:
                 prevTicks = self.__timer.renderPartialTicks
                 self.__timer.updateTimer()
@@ -935,6 +932,7 @@ class Minecraft(window.Window):
         if not self.theWorld:
             return
 
+        self.theWorld.updateLighting()
         self.theWorld.difficultySetting = self.options.difficulty
         if not self.isGamePaused:
             self.entityRenderer.updateRenderer()

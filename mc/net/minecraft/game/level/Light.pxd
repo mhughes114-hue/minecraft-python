@@ -14,8 +14,8 @@ cdef class Light:
         int __worldWidth
         int __worldLength
         int __worldHeight
-        list __skyLightList
-        list __blockLightList
+        object __skyLightList
+        object __blockLightList
         list __lightingUpdateList1
         list __lightingUpdateList2
         int[:] __lightingUpdateList3

@@ -7,6 +7,9 @@ import_module('mc.net.minecraft.client.Minecraft')
 EntityLandmine = import_module(
     'mc.net.minecraft.game.entity.misc.EntityLandmine'
 ).EntityLandmine
+EntityLiving = import_module(
+    'mc.net.minecraft.game.entity.EntityLiving'
+).EntityLiving
 EntityClusterShell = import_module(
     'mc.net.minecraft.game.entity.projectile.EntityClusterShell'
 ).EntityClusterShell
@@ -28,11 +31,9 @@ class LandmineMLRSTests(unittest.TestCase):
         mine = EntityLandmine(world)
         mine.setPosition(8.5, 4.12, 8.5)
         world.spawnEntityInWorld(mine)
-        target = SimpleNamespace(
-            posX=9.5, posY=4.12, posZ=8.5, health=20,
-            isEntityAlive=lambda: True,
-        )
-        world.entityMap.all.append(target)
+        target = EntityLiving(world)
+        target.setPosition(9.5, 4.12, 8.5)
+        world.spawnEntityInWorld(target)
 
         mine._checkForDetonation()
 
@@ -43,15 +44,46 @@ class LandmineMLRSTests(unittest.TestCase):
         mine = EntityLandmine(world)
         mine.setPosition(8.5, 4.12, 8.5)
         world.spawnEntityInWorld(mine)
-        target = SimpleNamespace(
-            posX=12.0, posY=4.12, posZ=8.5, health=20,
-            isEntityAlive=lambda: True,
-        )
-        world.entityMap.all.append(target)
+        target = EntityLiving(world)
+        target.setPosition(12.0, 4.12, 8.5)
+        world.spawnEntityInWorld(target)
 
         mine._checkForDetonation()
 
         self.assertFalse(mine.isDead)
+
+    def test_explosion_damage_at_source_position_does_not_divide_by_zero(self):
+        world = self.make_world()
+        world.survivalWorld = True
+        target = EntityLiving(world)
+        source = EntityLiving(world)
+        target.setPosition(8.5, 4.0, 8.5)
+        source.setPosition(8.5, 4.0, 8.5)
+
+        self.assertTrue(target.attackEntityFrom(source, 1))
+        self.assertEqual(target.health, 9)
+
+    def test_knockback_handles_distances_that_underflow_when_squared(self):
+        world = self.make_world()
+        world.survivalWorld = True
+        target = EntityLiving(world)
+        source = EntityLiving(world)
+        target.setPosition(8.5, 4.0, 8.5)
+        source.setPosition(8.5 + 1e-30, 4.0, 8.5 + 1e-30)
+
+        self.assertTrue(target.attackEntityFrom(source, 1))
+
+    def test_knockback_handles_axis_aligned_attacker_positions(self):
+        world = self.make_world()
+        world.survivalWorld = True
+        target = EntityLiving(world)
+        source = EntityLiving(world)
+        target.setPosition(8.5, 4.0, 8.5)
+        source.setPosition(8.5, 4.0, 9.5)
+
+        self.assertTrue(target.attackEntityFrom(source, 1))
+        self.assertAlmostEqual(target.motionX, 0.0)
+        self.assertAlmostEqual(target.motionZ, -0.4)
 
     def test_mlrs_launches_a_cluster_shell_at_the_enemy_position(self):
         target = SimpleNamespace(posX=32.5, posZ=48.5)

@@ -16,21 +16,19 @@ from mc.net.minecraft.client.effect.EntitySmokeFX import EntitySmokeFX
 from mc.net.minecraft.client.effect.EntityFlameFX import EntityFlameFX
 from mc.net.minecraft.client.effect.EntityLavaFX import EntityLavaFX
 from mc.net.minecraft.client.render.camera.Frustum cimport Frustum
-from mc.net.minecraft.client.render.EntitySorter import EntitySorter
 from mc.net.minecraft.client.render.Tessellator import tessellator
 from mc.net.minecraft.client.render.WorldRenderer cimport WorldRenderer
-from mc.net.minecraft.client.render.RenderSorter import RenderSorter
 from mc.net.minecraft.client.render.RenderBlocks cimport RenderBlocks
 from mc.net.minecraft.client.render.ImageBufferDownload import ImageBufferDownload
 from mc.net.minecraft.client.render.entity.RenderManager import RenderManager
 from mc.JavaUtils import BufferUtils
 from mc.JavaUtils cimport Random, getMillis
 from pyglet import gl
-from functools import cmp_to_key
 
 @cython.final
 cdef class RenderGlobal:
     CHUNK_SIZE = 16
+    CHUNK_UPDATES_PER_FRAME = 2
 
     def __cinit__(self):
         self.__countEntitiesTotal = 0
@@ -55,11 +53,16 @@ cdef class RenderGlobal:
         self.__worldRenderersToUpdate = []
         self.__sortedWorldRenderers = []
         self.__worldRenderers = []
+        self.__frustumRenderers = []
         self.__globalRenderBlocks = None
         RenderManager.instance = RenderManager()
         self.__prevSortX = -9999.0
         self.__prevSortY = -9999.0
         self.__prevSortZ = -9999.0
+        self.__prevUpdateSortX = -9999.0
+        self.__prevUpdateSortY = -9999.0
+        self.__prevUpdateSortZ = -9999.0
+        self.__updateSortNeeded = True
         self.damagePartialTime = 0.0
         self.__glGenList = gl.glGenLists(2)
         self.__glRenderListBase = gl.glGenLists(786432)
@@ -118,11 +121,17 @@ cdef class RenderGlobal:
             for chunk in self.__worldRenderers:
                 chunk.stopRendering()
 
+        self.__frustumRenderers.clear()
+
         self.__renderChunksWide = self.__worldObj.width // self.CHUNK_SIZE
         self.__renderChunksTall = self.__worldObj.height // self.CHUNK_SIZE
         self.__renderChunksDeep = self.__worldObj.length // self.CHUNK_SIZE
         self.__worldRenderers = [None] * self.__renderChunksWide * self.__renderChunksTall * self.__renderChunksDeep
         self.__sortedWorldRenderers = [None] * self.__renderChunksWide * self.__renderChunksTall * self.__renderChunksDeep
+        self.__updateSortNeeded = True
+        self.__prevUpdateSortX = -9999.0
+        self.__prevUpdateSortY = -9999.0
+        self.__prevUpdateSortZ = -9999.0
 
         lists = 0
         chunks = 0
@@ -156,18 +165,26 @@ cdef class RenderGlobal:
         )
 
     def renderEntities(self, vec, Frustum frustum, float a):
-        cdef int x, y, z, x0, y0, z0, x1, y1, z1, chunk
+        cdef int x, y, z, x0, y0, z0, x1, y1, z1, chunk, renderDistance
+        cdef float entityRenderRadius
         cdef bint visible
         cdef Entity entity
 
         RenderManager.instance.cacheActiveRenderInfo(self.__worldObj, self.__renderEngine,
                                                      self.__mc.thePlayer, a)
-        self.__countEntitiesTotal = 0
+        self.__countEntitiesTotal = len(self.__worldObj.entityMap.all)
         self.__countEntitiesRendered = 0
         self.__countEntitiesHidden = 0
         eMap = self.__worldObj.entityMap
-        for entity in eMap.all:
-            self.__countEntitiesTotal += 1
+        renderDistance = max(0, min(3, self.__mc.options.renderDistance))
+        entityRenderRadius = <float>(512 >> (renderDistance << 1)) + self.CHUNK_SIZE
+        nearbyEntities = eMap.getEntitiesWithinAABB(
+            self.__mc.thePlayer,
+            self.__mc.thePlayer.boundingBox.expand(
+                entityRenderRadius, entityRenderRadius, entityRenderRadius
+            )
+        )
+        for entity in nearbyEntities:
             x = max(0, min(eMap.width - 1, <int>(entity.posX // 8.0)))
             y = max(0, min(eMap.depth - 1, <int>(entity.posY // 8.0)))
             z = max(0, min(eMap.height - 1, <int>(entity.posZ // 8.0)))
@@ -217,13 +234,13 @@ cdef class RenderGlobal:
         xd = player.posX - self.__prevSortX
         yd = player.posY - self.__prevSortY
         zd = player.posZ - self.__prevSortZ
-        if xd * xd + yd * yd + zd * zd > 16.0:
+        if xd * xd + yd * yd + zd * zd > 256.0:
             self.__prevSortX = player.posX
             self.__prevSortY = player.posY
             self.__prevSortZ = player.posZ
             self.__sortedWorldRenderers = sorted(
                 self.__sortedWorldRenderers,
-                key=cmp_to_key(EntitySorter(player).compare)
+                key=lambda chunk: chunk.distanceToEntitySquared(player)
             )
 
         if self.__occlusionEnabled and layer == 0:
@@ -520,22 +537,31 @@ cdef class RenderGlobal:
         gl.glDisable(gl.GL_BLEND)
 
     def updateRenderers(self, player):
-        cdef int last, i
+        cdef int i
+        cdef float xd, yd, zd
         cdef WorldRenderer chunk
 
-        self.__worldRenderersToUpdate.sort(
-            key=lambda chunk: (
-                chunk.isInFrustum,
-                -chunk.distanceToEntitySquared(player)
+        if not self.__worldRenderersToUpdate:
+            return
+
+        xd = player.posX - self.__prevUpdateSortX
+        yd = player.posY - self.__prevUpdateSortY
+        zd = player.posZ - self.__prevUpdateSortZ
+        if self.__updateSortNeeded or xd * xd + yd * yd + zd * zd > 16.0:
+            self.__worldRenderersToUpdate.sort(
+                key=lambda renderer: (
+                    renderer.isInFrustum,
+                    -renderer.distanceToEntitySquared(player)
+                )
             )
-        )
+            self.__prevUpdateSortX = player.posX
+            self.__prevUpdateSortY = player.posY
+            self.__prevUpdateSortZ = player.posZ
+            self.__updateSortNeeded = False
 
-        last = len(self.__worldRenderersToUpdate) - 1
-        for i in range(last + 1):
+        for i in range(min(RenderGlobal.CHUNK_UPDATES_PER_FRAME,
+                           len(self.__worldRenderersToUpdate))):
             chunk = self.__worldRenderersToUpdate[-1]
-            if chunk.distanceToEntitySquared(player) > 2500.0 and i > 4:
-                return
-
             self.__worldRenderersToUpdate.pop()
             chunk.updateRenderer()
             chunk.needsUpdate = False
@@ -618,6 +644,8 @@ cdef class RenderGlobal:
                     i = (z * self.__renderChunksTall + y) * self.__renderChunksWide + x
                     chunk = self.__worldRenderers[i]
                     if not chunk.needsUpdate:
+                        if not self.__worldRenderersToUpdate:
+                            self.__updateSortNeeded = True
                         chunk.needsUpdate = True
                         self.__worldRenderersToUpdate.append(chunk)
 
@@ -629,9 +657,34 @@ cdef class RenderGlobal:
         self.__markBlocksForUpdate(x0 - 1, y0 - 1, z0 - 1, x1 + 1, y1 + 1, z1 + 1)
 
     def clipRenderersByFrustum(self, Frustum frustum):
+        cdef int x, y, z, x0, y0, z0, x1, y1, z1, index, renderDistance
+        cdef float radius
         cdef WorldRenderer chunk
-        for chunk in self.__worldRenderers:
-            chunk.updateInFrustum(frustum)
+
+        for index in self.__frustumRenderers:
+            self.__worldRenderers[index].isInFrustum = False
+        self.__frustumRenderers.clear()
+
+        renderDistance = max(0, min(3, self.__mc.options.renderDistance))
+        radius = <float>(512 >> (renderDistance << 1)) + self.CHUNK_SIZE
+        player = self.__mc.thePlayer
+        x0 = max(0, <int>((player.posX - radius) // self.CHUNK_SIZE))
+        y0 = max(0, <int>((player.posY - radius) // self.CHUNK_SIZE))
+        z0 = max(0, <int>((player.posZ - radius) // self.CHUNK_SIZE))
+        x1 = min(self.__renderChunksWide - 1,
+                 <int>((player.posX + radius) // self.CHUNK_SIZE))
+        y1 = min(self.__renderChunksTall - 1,
+                 <int>((player.posY + radius) // self.CHUNK_SIZE))
+        z1 = min(self.__renderChunksDeep - 1,
+                 <int>((player.posZ + radius) // self.CHUNK_SIZE))
+
+        for x in range(x0, x1 + 1):
+            for y in range(y0, y1 + 1):
+                for z in range(z0, z1 + 1):
+                    index = (z * self.__renderChunksTall + y) * self.__renderChunksWide + x
+                    chunk = self.__worldRenderers[index]
+                    chunk.updateInFrustum(frustum)
+                    self.__frustumRenderers.append(index)
 
     def playSound(self, str sound, float x, float y, float z,
                   float volume, float pitch):

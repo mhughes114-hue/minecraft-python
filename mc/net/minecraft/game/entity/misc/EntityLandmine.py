@@ -15,7 +15,11 @@ class EntityLandmine(Entity):
         self._checkForDetonation()
 
     def _checkForDetonation(self):
-        for entity in self._worldObj.entityMap.all[:]:
+        radius = self.TRIGGER_RADIUS
+        nearbyEntities = self._worldObj.getEntitiesWithinAABBExcludingEntity(
+            self, self.boundingBox.expand(radius, radius, radius)
+        )
+        for entity in nearbyEntities:
             if entity is self or not hasattr(entity, 'health') or \
                not entity.isEntityAlive():
                 continue
@@ -23,7 +27,7 @@ class EntityLandmine(Entity):
             dx = entity.posX - self.posX
             dy = entity.posY - self.posY
             dz = entity.posZ - self.posZ
-            if dx * dx + dy * dy + dz * dz <= self.TRIGGER_RADIUS ** 2:
+            if dx * dx + dy * dy + dz * dz <= radius * radius:
                 self.setEntityDead()
                 self._worldObj.createExplosion(
                     self, self.posX, self.posY, self.posZ, 2.2,
