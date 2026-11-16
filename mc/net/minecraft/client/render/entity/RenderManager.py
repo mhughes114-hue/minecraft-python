@@ -30,6 +30,7 @@ from mc.net.minecraft.client.model.ModelVillagerTank import ModelVillagerTank
 from mc.net.minecraft.client.model.ModelPillagerAircraft import ModelPillagerAircraft
 from mc.net.minecraft.client.model.ModelVillagerAircraft import ModelVillagerAircraft
 from mc.net.minecraft.client.model.ModelMLRS import ModelMLRS
+from mc.net.minecraft.client.model.ModelFPVDrone import ModelFPVDrone
 from mc.net.minecraft.game.entity.Entity import Entity
 from mc.net.minecraft.game.entity.EntityLiving import EntityLiving
 from mc.net.minecraft.game.entity.EntityPainting import EntityPainting
@@ -47,6 +48,7 @@ from mc.net.minecraft.game.entity.monster.EntityVentoraptor import EntityVentora
 from mc.net.minecraft.game.entity.monster.EntityWitherStorm import EntityWitherStorm
 from mc.net.minecraft.game.entity.monster.EntityZombie import EntityZombie
 from mc.net.minecraft.game.entity.monster.EntityPillager import EntityPillager
+from mc.net.minecraft.game.entity.monster.EntityFPVDrone import EntityFPVDrone
 from mc.net.minecraft.game.entity.monster.EntityPillagerAircraft import EntityPillagerAircraft
 from mc.net.minecraft.game.entity.monster.EntityPillagerTank import EntityPillagerTank
 from mc.net.minecraft.game.entity.monster.EntityVillagerAircraft import EntityVillagerAircraft
@@ -86,6 +88,7 @@ class RenderManager:
         self.__entityRenderMap[EntityZombie] = RenderLiving(ModelZombie(), 0.5)
         self.__entityRenderMap[EntityVillager] = RenderLiving(ModelVillager(), 0.5)
         self.__entityRenderMap[EntityPillager] = RenderLiving(ModelPillager(), 0.5)
+        self.__entityRenderMap[EntityFPVDrone] = RenderLiving(ModelFPVDrone(), 0.25)
         self.__entityRenderMap[EntityVillagerTank] = RenderLiving(ModelVillagerTank(), 1.8, 2.5)
         self.__entityRenderMap[EntityPillagerTank] = RenderLiving(ModelPillagerTank(), 1.8, 2.5)
         self.__entityRenderMap[EntityVillagerMLRS] = RenderLiving(ModelMLRS(), 1.8, 2.5)

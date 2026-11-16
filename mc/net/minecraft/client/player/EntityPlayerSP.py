@@ -5,7 +5,7 @@ from mc.net.minecraft.client.gui.container.GuiChest import GuiChest
 from mc.net.minecraft.client.gui.container.GuiTsarBomba import GuiTsarBomba
 from mc.net.minecraft.game.entity.player.EntityPlayer import EntityPlayer
 from mc.net.minecraft.game.item.ItemStack import ItemStack
-from nbtlib.tag import Compound, List, Byte, Int
+from nbtlib.tag import Compound, List, Byte, Int, String
 
 class EntityPlayerSP(EntityPlayer):
 
@@ -54,6 +54,8 @@ class EntityPlayerSP(EntityPlayer):
 
     def onLivingUpdate(self):
         self.movementInput.updatePlayerMoveState()
+        previousX = self.posX
+        previousZ = self.posZ
         flying = self.__mc.playerController.isInTestMode
         if flying:
             if self.movementInput.jump:
@@ -64,12 +66,16 @@ class EntityPlayerSP(EntityPlayer):
                 self.motionY = 0.0
 
         super().onLivingUpdate()
+        if (self.posX - previousX) ** 2 + (self.posZ - previousZ) ** 2 > 0.0001:
+            self.incurDebt()
+
         if flying:
             self.motionY = 0.0
 
     def _writeEntityToNBT(self, compound):
         super()._writeEntityToNBT(compound)
         compound['Score'] = Int(self._getScore)
+        compound['Debt'] = String(str(self.debt))
         invList = List[Compound]()
         for slot in range(len(self.inventory.mainInventory)):
             if self.inventory.mainInventory[slot]:
@@ -87,6 +93,7 @@ class EntityPlayerSP(EntityPlayer):
     def _readEntityFromNBT(self, compound):
         super()._readEntityFromNBT(compound)
         self._getScore = compound.get('Score', Int(0)).real
+        self.debt = int(str(compound.get('Debt', String('0'))))
         invList = compound.get('Inventory', List[Compound]())
         self.inventory.mainInventory = [None] * 36
         self.inventory.armorInventory = [None] * 4

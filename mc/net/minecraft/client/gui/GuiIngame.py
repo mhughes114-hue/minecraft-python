@@ -89,6 +89,13 @@ class GuiIngame(Gui):
                                                    scaledHeight - 32 - 9, 25, 18, 9, 9)
 
         gl.glDisable(gl.GL_BLEND)
+        debtText = f'DEBT: {self.__mc.thePlayer.debt}'
+        self.__mc.fontRenderer.drawStringWithShadow(
+            debtText,
+            scaledWidth - self.__mc.fontRenderer.getStringWidth(debtText) - 4,
+            4,
+            0xFF5555
+        )
         gl.glEnable(gl.GL_NORMALIZE)
         gl.glPushMatrix()
         gl.glRotatef(180.0, 1.0, 0.0, 0.0)

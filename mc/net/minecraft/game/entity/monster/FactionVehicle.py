@@ -10,8 +10,10 @@ import math
 class FactionVehicle(EntityMob):
     canDamageInCreative = True
     canSpawnInDaylight = True
-    TSAR_BOMBA_INITIAL_DELAY = 200
-    TSAR_BOMBA_COOLDOWN = 1200
+    TSAR_BOMBA_INITIAL_DELAY = 3 * 24000
+    TSAR_BOMBA_COOLDOWN = 12000
+    TSAR_BOMBA_COOLDOWN_VARIANCE = 12000
+    NORMAL_BOMB_COOLDOWN = 200
     MLRS_COOLDOWN = 100
     MLRS_RANGE = 72.0
 
@@ -20,6 +22,7 @@ class FactionVehicle(EntityMob):
         self.faction = faction
         self.vehicle = vehicle
         self._tsarBombCooldown = self.TSAR_BOMBA_INITIAL_DELAY
+        self._normalBombCooldown = self.NORMAL_BOMB_COOLDOWN
         self._mlrsCooldown = 60
         self._texture = f'mob/{faction}_{"tank" if vehicle in ("tank", "mlrs") else "plane"}.png'
         if vehicle in ('tank', 'mlrs'):
@@ -55,17 +58,46 @@ class FactionVehicle(EntityMob):
            not self._playerToAttack.isEntityAlive():
             return
 
+        target = self._playerToAttack
         if self._tsarBombCooldown > 0:
             self._tsarBombCooldown -= 1
+            self._dropNormalBombWhenReady(target)
+            return
+
+        world = self._worldObj
+        if world.tsarBombaCooldown > 0:
+            self._dropNormalBombWhenReady(target)
             return
 
         from mc.net.minecraft.game.level.TsarBomba import TsarBomba
 
-        target = self._playerToAttack
-        self._worldObj.tsarBombs.append(
-            TsarBomba(self._worldObj, target.posX, target.posY, target.posZ)
+        world.tsarBombs.append(
+            TsarBomba(world, target.posX, target.posY, target.posZ)
         )
-        self._tsarBombCooldown = self.TSAR_BOMBA_COOLDOWN
+        world.tsarBombaCooldown = (
+            self.TSAR_BOMBA_COOLDOWN +
+            world.rand.nextInt(self.TSAR_BOMBA_COOLDOWN_VARIANCE + 1)
+        )
+
+    def _dropNormalBombWhenReady(self, target):
+        if self._normalBombCooldown > 0:
+            self._normalBombCooldown -= 1
+            return
+
+        self._dropNormalBomb(target)
+        self._normalBombCooldown = self.NORMAL_BOMB_COOLDOWN
+
+    def _dropNormalBomb(self, target):
+        from mc.net.minecraft.game.entity.misc.EntityTNTPrimed import EntityTNTPrimed
+
+        bomb = EntityTNTPrimed(
+            self._worldObj, target.posX, target.posY + 10.0, target.posZ
+        )
+        bomb.fuse = 40
+        bomb.motionX = 0.0
+        bomb.motionY = -0.2
+        bomb.motionZ = 0.0
+        self._worldObj.spawnEntityInWorld(bomb)
 
     def _updateMLRS(self):
         if self.vehicle != 'mlrs' or self.health <= 0 or \

@@ -34,6 +34,7 @@ class EntityPlayer(EntityLiving):
         self.health = EntityPlayer.MAX_HEALTH
         self.fireResistance = EntityPlayer.FIRE_RESISTANCE
         self._texture = 'char.png'
+        self.debt = 0
 
     def preparePlayerToSpawn(self):
         self.yOffset = 1.62
@@ -46,6 +47,9 @@ class EntityPlayer(EntityLiving):
         self.deathTime = 0
 
     def onLivingUpdate(self):
+        if self.health > 0:
+            self.incurDebt()
+
         self._worldObj.playMusic(self.posX, self.posY, self.posZ, 'calm', 0.0)
         if self._worldObj.difficultySetting == 0 and self.health < 20 and \
            self.ticksExisted % 20 << 2 == 0:
@@ -72,6 +76,9 @@ class EntityPlayer(EntityLiving):
         if self.health > 0 and entities:
             for entity in entities:
                 entity.onCollideWithPlayer(self)
+
+    def incurDebt(self):
+        self.debt -= 1
 
     def getScore(self):
         return self._getScore

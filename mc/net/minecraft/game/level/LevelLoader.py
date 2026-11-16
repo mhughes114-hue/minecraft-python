@@ -16,6 +16,7 @@ from mc.net.minecraft.game.entity.monster.EntityVentoraptor import EntityVentora
 from mc.net.minecraft.game.entity.monster.EntityWitherStorm import EntityWitherStorm
 from mc.net.minecraft.game.entity.monster.EntityZombie import EntityZombie
 from mc.net.minecraft.game.entity.monster.EntityPillager import EntityPillager
+from mc.net.minecraft.game.entity.monster.EntityFPVDrone import EntityFPVDrone
 from mc.net.minecraft.game.entity.monster.EntityPillagerAircraft import EntityPillagerAircraft
 from mc.net.minecraft.game.entity.monster.EntityPillagerMLRS import EntityPillagerMLRS
 from mc.net.minecraft.game.entity.monster.EntityPillagerTank import EntityPillagerTank
@@ -132,6 +133,8 @@ class LevelLoader:
             return EntityVillager(world)
         elif entityId == 'Pillager':
             return EntityPillager(world)
+        elif entityId == 'FPVDrone':
+            return EntityFPVDrone(world)
         elif entityId == 'VillagerTank':
             return EntityVillagerTank(world)
         elif entityId == 'PillagerTank':

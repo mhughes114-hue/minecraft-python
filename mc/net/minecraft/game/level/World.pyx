@@ -64,6 +64,7 @@ cdef class World:
 
         self.worldAccesses = []
         self.tsarBombs = []
+        self.tsarBombaCooldown = 0
         self.__tickList = set()
 
         self.map = {}
@@ -475,6 +476,8 @@ cdef class World:
         self.worldTime += 1
         if self.worldTime == self.__timeCycle:
             self.worldTime = 0
+        if self.tsarBombaCooldown > 0:
+            self.tsarBombaCooldown -= 1
 
         br = self.getSkyBrightness();
         if self.skylightSubtracted > br:

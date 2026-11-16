@@ -18,6 +18,9 @@ class PlayerController:
         block = blocks.blocksList[self._mc.theWorld.getBlockId(x, y, z)]
         metadata = self._mc.theWorld.getBlockMetadata(x, y, z)
         change = self._mc.theWorld.setBlockWithNotify(x, y, z, 0)
+        if change:
+            self._mc.thePlayer.incurDebt()
+
         if block and change:
             speed = (block.stepSound.soundVolume + 1.0) / 2.0
             self._mc.sndManager.playSound(

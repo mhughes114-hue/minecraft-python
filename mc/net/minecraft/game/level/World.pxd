@@ -38,6 +38,7 @@ cdef class World:
 
         public list worldAccesses
         public list tsarBombs
+        public int tsarBombaCooldown
         set __tickList
 
         public dict map

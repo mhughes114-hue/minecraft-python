@@ -17,6 +17,7 @@ from mc.net.minecraft.game.entity.monster.EntityPillager import EntityPillager
 from mc.net.minecraft.game.entity.monster.EntityPillagerAircraft import EntityPillagerAircraft
 from mc.net.minecraft.game.entity.monster.EntityPillagerMLRS import EntityPillagerMLRS
 from mc.net.minecraft.game.entity.monster.EntityPillagerTank import EntityPillagerTank
+from mc.net.minecraft.game.entity.monster.EntityFPVDrone import EntityFPVDrone
 from mc.net.minecraft.game.entity.monster.EntityVillagerAircraft import EntityVillagerAircraft
 from mc.net.minecraft.game.entity.monster.EntityVillagerMLRS import EntityVillagerMLRS
 from mc.net.minecraft.game.entity.monster.EntityVillagerTank import EntityVillagerTank
@@ -35,6 +36,7 @@ SPAWN_EGG_ENTITIES = (
     ('Pillager Aircraft', EntityPillagerAircraft),
     ('Villager MLRS', EntityVillagerMLRS),
     ('Pillager MLRS', EntityPillagerMLRS),
+    ('FPV Drone', EntityFPVDrone),
     ('Zombie', EntityZombie),
     ('Skeleton', EntitySkeleton),
     ('Creeper', EntityCreeper),
@@ -63,6 +65,7 @@ ENTITY_TYPES.update({
     'pillagerplane': EntityPillagerAircraft,
     'villagermlrs': EntityVillagerMLRS,
     'pillagermlrs': EntityPillagerMLRS,
+    'fpvdrone': EntityFPVDrone,
 })
 
 
@@ -91,7 +94,7 @@ class MobSpawner:
                 break
 
             mobs = 0
-            choice = self.__worldObj.rand.nextInt(16)
+            choice = self.__worldObj.rand.nextInt(17)
             blockX = self.__worldObj.rand.nextInt(self.__worldObj.width)
             blockY = int(min(self.__worldObj.rand.nextFloat(),
                              self.__worldObj.rand.nextFloat()) * self.__worldObj.height)
@@ -151,6 +154,8 @@ class MobSpawner:
                             mob = EntityVillagerMLRS(self.__worldObj)
                         elif choice == 15:
                             mob = EntityPillagerMLRS(self.__worldObj)
+                        elif choice == 16:
+                            mob = EntityFPVDrone(self.__worldObj)
 
                         if isinstance(mob, EntityMob) and self.__worldObj.difficultySetting == 0:
                             mob = None
