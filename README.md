@@ -56,7 +56,8 @@ The Tsar Bomba is an assembly block with a GUI. Insert 1 TNT block, 8 gunpowder,
 The Wither Storm is a large boss with its own animated model and texture. It does not despawn, tracks and periodically chases the player, absorbs nearby mobs and terrain to evolve through larger, stronger stages, and attacks with increasingly powerful explosions. Terrain absorption grows exponentially with each stage: it can absorb up to 2, 4, 8, then 16 blocks per pulse. Spawn it with `/spawn witherstorm` or its spawn egg. Absorption changes terrain; bedrock, containers, rare blocks, TNT, obsidian, and Lucky Blocks are protected. The current world engine has no chunk system, so the boss cannot load distant chunks or render outside the loaded world.
 
 The Indev level generator is customizable and you can choose between the *Inland*, *Island*, *Floating*, and *Flat* level types.
-You can specify the world theme as *Normal*, *Hell* (lava and dirt instead of water and grass), *Paradise* (always daylight), or *Woods*.
+You can specify the world theme as *Normal*, *Hell* (lava and dirt instead of water and grass), *Paradise* (always daylight), *Woods*, or *Aether*.
+The *Aether* theme generates a bright sky world with floating islands; it can be selected independently of the world type.
 World size and world shape (*Square*, *Long*, *Deep*) may also be selected.
 
 Levels can be saved to a single *.mclevel* NBT file in the pause menu. The level files are perfectly compatible with Java and vice versa.
@@ -79,10 +80,5 @@ This would have been much more challenging to work on without the great tools pr
 
 All credit for Minecraft goes towards its creator Notch and Mojang Specifications.
 
-
-
 Yeah ok but what I do is
 .\.venv\Scripts\python.exe -m mc.net.minecraft.client.Minecraft
-
-
-todo: add aether

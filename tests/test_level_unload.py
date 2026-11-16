@@ -1,6 +1,6 @@
 from types import SimpleNamespace
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 from mc.net.minecraft.client.Minecraft import Minecraft
 
@@ -56,6 +56,30 @@ class LevelUnloadTests(unittest.TestCase):
         effect_renderer.clearEffects.assert_called_once_with(None)
         self.assertIsNone(minecraft.theWorld)
         self.assertIsNone(minecraft.thePlayer)
+
+    def test_aether_theme_uses_floating_world_generation(self):
+        generated_world = object()
+        level_generator = Mock()
+        level_generator.generate.return_value = generated_world
+        loaded_worlds = []
+        minecraft = SimpleNamespace(
+            session=None,
+            loadingScreen=None,
+            setLevel=loaded_worlds.append,
+        )
+
+        with patch(
+            "mc.net.minecraft.client.Minecraft.LevelGenerator",
+            return_value=level_generator,
+        ):
+            Minecraft.generateLevel(minecraft, 0, 0, 0, 4)
+
+        self.assertFalse(level_generator.islandGen)
+        self.assertTrue(level_generator.floatingGen)
+        self.assertFalse(level_generator.flatGen)
+        self.assertEqual(level_generator.levelType, 4)
+        level_generator.generate.assert_called_once_with("anonymous", 128, 128, 64)
+        self.assertEqual(loaded_worlds, [None, generated_world])
 
 
 if __name__ == "__main__":

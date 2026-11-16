@@ -928,9 +928,10 @@ class Minecraft(window.Window):
         gc.collect()
         name = self.session.username if self.session else 'anonymous'
         levelGen = LevelGenerator(self.loadingScreen)
-        levelGen.islandGen = levelType == 1
-        levelGen.floatingGen = levelType == 2
-        levelGen.flatGen = levelType == 3
+        aetherGen = theme == 4
+        levelGen.islandGen = levelType == 1 and not aetherGen
+        levelGen.floatingGen = levelType == 2 or aetherGen
+        levelGen.flatGen = levelType == 3 and not aetherGen
         levelGen.levelType = theme
         width = 128 << size
         height = width

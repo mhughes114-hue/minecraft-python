@@ -274,6 +274,13 @@ cdef class LevelGenerator:
             world.fogColor = 5069403
             world.cloudColor = 5069403
             world.skylightSubtracted = world.skyBrightness = 12
+        elif self.levelType == 4:
+            world.skyColor = 0x9CCFFF
+            world.fogColor = 0xDCEFFF
+            world.cloudColor = 0xFFFFFF
+            world.skylightSubtracted = 0
+            world.skyBrightness = 16
+            world.cloudHeight = self.__height // 2
 
         b = bytearray(self.__width * self.__depth * self.__height)
         for i in range(len(b)):
