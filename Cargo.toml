@@ -1,0 +1,18 @@
+[package]
+name = "minecraft-rust"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.75"
+
+[[bin]]
+name = "minecraft-rust"
+path = "src/main.rs"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+softbuffer = "0.4"
+winit = "0.30"
+image = { version = "0.24", default-features = false, features = ["png"] }
+
+[dev-dependencies]

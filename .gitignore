@@ -14,3 +14,4 @@ minecraft_python.egg-info
 .DS_Store
 *.so
 *.mclevel
+target/

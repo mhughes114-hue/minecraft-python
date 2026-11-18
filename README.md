@@ -1,11 +1,14 @@
-## Minecraft: Python Edition: Banana edition
+## Minecraft: Rust Edition
 
 ![Minecraft](/screenshot.png?raw=true)
 
-_**Minecraft: Python Edition**_ is a project that strives to recreate each and every old Minecraft version in Python 3 using the **Pyglet** multimedia library and **Cython** for performance.
+_**Minecraft: Rust Edition**_ is an in-progress native Rust prototype using a software renderer.
 
-The project has completed the Indev versions of Minecraft.
-This version of Indev, the final one, is **Indev 20100223** as released on _**February 23, 2010**_.
+It currently includes procedural terrain, first-person movement, basic block rendering from the
+existing terrain tiles, a hotbar, title/pause/inventory overlays, and a few placeholder wandering
+mobs. This is **not a complete port** of the Python game: most gameplay systems, entities, menus,
+items, crafting, audio, Java-compatible NBT saves, and the original rendering pipeline have not yet
+been implemented in Rust. The Python game remains available separately using the launch command below.
 
 This version adds paintings to the game and makes wood logs drop as logs instead of planks.
 It also includes four original creatures inspired by Lycanites Mobs: the peaceful Aegis and the hostile Cinder, Chupacabra, and Ventoraptor.
@@ -28,6 +31,18 @@ To play any version, specify it in the `pip install` command as demonstrated bel
 
 *Pyglet*, *Cython*, *Pillow*, *PyOgg*, *NumPy*, and *nbtlib* are required dependencies which can easily be installed with *pip*. Use the versions specified in `requirements.txt`.
 *wxPython* is an optional dependency for the level file picker, but if you don't have it then *Tkinter* is used instead.
+
+### Rust build
+
+The native Rust client requires a recent stable Rust toolchain.
+
+```powershell
+cargo run --release
+```
+
+Use WASD to move, mouse to look, Space to jump, number keys to select blocks, left/right click to
+mine/place, I to open inventory, and Escape to pause. Click Play/Resume to enter the world. F5/F9
+save/load the world.
 
 For audio to work you will either need *PyOgg* which is recommended, or *FFmpeg* which has to be installed on your system.
 *GStreamer* is also supported on Linux through the *gst-python* library.
